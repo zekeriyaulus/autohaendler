@@ -1,0 +1,30 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "cars"
+    label: "Fahrzeuge"
+    folder: "src/data/cars"
+    create: true
+    delete: true
+    extension: "json"
+    format: "json"
+    slug: "{{id}}"
+    fields:
+      - { label: "ID (URL)", name: "id", widget: "string" }
+      - { label: "Titel", name: "titel", widget: "string" }
+      - { label: "Preis", name: "preis", widget: "number", value_type: "int", min: 0 }
+      - { label: "Kilometer", name: "km", widget: "number", value_type: "int", min: 0 }
+      - { label: "Erstzulassung", name: "ez", widget: "string" }
+      - label: "Status"
+        name: "status"
+        widget: "select"
+        options: ["verfuegbar", "reserviert", "verkauft"]
+      - label: "Bilder"
+        name: "bilder"
+        widget: "list"
+        field: { label: "Bild", name: "bild", widget: "image" }

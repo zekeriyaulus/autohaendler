@@ -1,0 +1,89 @@
+---
+import autos from "../../data/cars.json";
+
+// alle möglichen IDs erzeugen
+export function getStaticPaths() {
+  return autos.map((auto) => ({
+    params: { id: auto.id },
+  }));
+}
+
+const { id } = Astro.params;
+const auto = autos.find((a) => a.id === id);
+---
+
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{auto ? auto.titel : "Fahrzeug nicht gefunden"}</title>
+  </head>
+
+  <body style="font-family: system-ui; max-width: 900px; margin: 40px auto; padding: 0 16px;">
+    <a href="/fahrzeuge/" style="text-decoration:none;">← Zurück zur Übersicht</a>
+
+    {!auto && <h1>Fahrzeug nicht gefunden</h1>}
+
+    {auto && (
+      <>
+        <h1 style="margin-top:12px;">{auto.titel}</h1>
+
+        {auto.bilder?.length ? (
+          <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:10px; margin: 16px 0;">
+            {auto.bilder.map((src) => (
+              <img
+                src={src}
+                alt={auto.titel}
+                loading="lazy"
+                style="width:100%; border-radius:12px; object-fit:cover;"
+              />
+            ))}
+          </div>
+        ) : (
+          <p style="opacity:.7; margin-top:12px;">Keine Bilder vorhanden.</p>
+        )}
+
+        <p style="font-size:22px; font-weight:800; margin-top:12px;">
+          {auto.preis.toLocaleString("de-DE")} €
+        </p>
+
+        <ul style="line-height:1.8;">
+          <li><b>Kilometer:</b> {auto.km.toLocaleString("de-DE")} km</li>
+          <li><b>Erstzulassung:</b> {auto.ez}</li>
+          <li><b>Status:</b> {auto.status}</li>
+        </ul>
+
+        <div
+          style="
+            margin-top:24px;
+            padding:16px;
+            border:1px solid #ddd;
+            border-radius:12px;
+            background:#fafafa;
+          "
+        >
+          <h3 style="margin:0 0 10px;">Interesse an diesem Fahrzeug?</h3>
+
+          <a
+            href={`mailto:info@autohaus.de?subject=${encodeURIComponent(
+              `Anfrage: ${auto.titel} (${auto.id})`
+            )}&body=${encodeURIComponent(
+              `Hallo,\n\nich interessiere mich für folgendes Fahrzeug:\n\n${auto.titel}\nPreis: ${auto.preis.toLocaleString(
+                "de-DE"
+              )} €\nKilometer: ${auto.km.toLocaleString(
+                "de-DE"
+              )} km\nEZ: ${auto.ez}\n\nLink: http://localhost:4321/fahrzeuge/${auto.id}\n\nBitte kontaktieren Sie mich.\n\nName:\nTelefon:\nE-Mail:\n\nViele Grüße`
+            )}`}
+            style="display:inline-block; padding:10px 14px; border-radius:12px; background:#111; color:#fff; text-decoration:none; font-weight:700;"
+          >
+            Anfrage per E-Mail senden
+          </a>
+
+          <p style="margin:10px 0 0; font-size:13px; opacity:.7;">
+            Öffnet dein Mailprogramm mit vorausgefüllter Nachricht.
+          </p>
+        </div>
+      </>
+    )}
+  </body>
+</html>
