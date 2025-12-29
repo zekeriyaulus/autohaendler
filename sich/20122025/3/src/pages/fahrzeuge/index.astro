@@ -1,0 +1,240 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import VehicleCard from "../../components/VehicleCard.astro";
+import CustomSelect from "../../components/CustomSelect.astro";
+import autosData from "../../data/cars.json";
+import { site } from "../../config/site.js";
+
+const autosAll = Array.isArray(autosData) ? autosData : (autosData?.default ?? []);
+
+// Helper: sicher zu Number
+const num = (v: any) => {
+  const s = String(v ?? "").trim();
+  if (!s) return null;
+  const n = Number(s.replace(/[^\d.-]/g, ""));
+  if (!Number.isFinite(n)) return null;
+  // 0 als "nicht gesetzt" behandeln (für Filterfelder)
+  return n === 0 ? null : n;
+};
+const str = (v: any) => String(v ?? "").trim();
+
+// Query Params lesen (GET)
+const sp = Astro.url.searchParams;
+
+const q = str(sp.get("q") || "");
+const hersteller = str(sp.get("hersteller") || "");
+const kraftstoff = str(sp.get("kraftstoff") || "");
+const getriebe = str(sp.get("getriebe") || "");
+const status = str(sp.get("status") || "");
+
+const preisMin = num(sp.get("preisMin"));
+const preisMax = num(sp.get("preisMax"));
+const kmMax = num(sp.get("kmMax"));
+const ezMin = num(sp.get("ezMin"));
+const ezMax = num(sp.get("ezMax"));
+
+const sort = str(sp.get("sort") || "neu");
+
+// Options dynamisch aus Daten bauen
+const uniq = (arr: any[]) =>
+  Array.from(new Set(arr.filter(Boolean)))
+    .sort((a, b) => String(a).localeCompare(String(b), "de"));
+
+const herstellerOptions = uniq(autosAll.map((a: any) => a.hersteller));
+const kraftstoffOptions = uniq(autosAll.map((a: any) => a.kraftstoff));
+const getriebeOptions = uniq(autosAll.map((a: any) => a.getriebe));
+const statusOptions = uniq(autosAll.map((a: any) => a.status));
+
+// Filter anwenden
+let autos = autosAll.filter((a: any) => {
+  // Textsuche (Titel + Hersteller + ggf. Modell)
+  if (q) {
+    const hay = `${a.titel ?? ""} ${a.hersteller ?? ""} ${a.modell ?? ""}`.toLowerCase();
+    if (!hay.includes(q.toLowerCase())) return false;
+  }
+
+  if (hersteller && str(a.hersteller) !== hersteller) return false;
+  if (kraftstoff && str(a.kraftstoff) !== kraftstoff) return false;
+  if (getriebe && str(a.getriebe) !== getriebe) return false;
+  if (status && str(a.status) !== status) return false;
+
+  const preis = num(a.preis);
+  const km = num(a.km);
+
+  if (preisMin !== null && (preis === null || preis < preisMin)) return false;
+  if (preisMax !== null && (preis === null || preis > preisMax)) return false;
+  if (kmMax !== null && (km === null || km > kmMax)) return false;
+
+  // EZ als Jahr aus "06/2019" oder "2019" oder "2019-06"
+  const ezRaw = str(a.ez);
+  const year = ezRaw.match(/\b(19\d{2}|20\d{2})\b/)?.[1];
+  const ezYear = year ? Number(year) : null;
+
+  if (ezMin !== null && (ezYear === null || ezYear < ezMin)) return false;
+  if (ezMax !== null && (ezYear === null || ezYear > ezMax)) return false;
+
+  return true;
+});
+
+// Sortierung
+const byNum = (x: number | null) => (x === null ? Number.POSITIVE_INFINITY : x);
+switch (sort) {
+  case "preis-asc":
+    autos.sort((a: any, b: any) => byNum(num(a.preis)) - byNum(num(b.preis)));
+    break;
+  case "preis-desc":
+    autos.sort((a: any, b: any) => byNum(num(b.preis)) - byNum(num(a.preis)));
+    break;
+  case "km-asc":
+    autos.sort((a: any, b: any) => byNum(num(a.km)) - byNum(num(b.km)));
+    break;
+  case "km-desc":
+    autos.sort((a: any, b: any) => byNum(num(b.km)) - byNum(num(a.km)));
+    break;
+  case "neu":
+  default:
+    autos.sort((a: any, b: any) => Number(b.id ?? 0) - Number(a.id ?? 0));
+}
+
+const title = `Fahrzeuge – ${site.name}`;
+const description = `Aktuelle Fahrzeuge bei ${site.name}. Filtere nach Hersteller, Preis, Kilometerstand, EZ, Getriebe und Kraftstoff.`;
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="hero" style="padding:22px 0 10px;">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+        <div>
+          <h1 class="h1">Fahrzeuge</h1>
+          <p class="p" style="max-width:720px; margin-top:10px; opacity:.9;">
+            Hier sind Beispiel-Fahrzeuge (Demo-Daten). Wenn ihr euren echten Bestand automatisch anzeigen wollt, nutzt die Seite
+            <a href="/fahrzeuge/live/" class="link">Live Bestand</a>.
+          </p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <a class="btn" href="/fahrzeuge/live/">Live Bestand (mobile.de)</a>
+          <a class="btn primary" href="/kontakt/">Kontakt</a>
+        </div>
+      </div>
+
+      <!-- FILTER FORM -->
+      <form class="card" method="get" style="margin-top:16px;padding:14px;">
+        <div class="grid" style="grid-template-columns:repeat(12,1fr);gap:10px;align-items:end;">
+          <div style="grid-column: span 12;">
+            <label class="small" for="q">Suche</label>
+            <input id="q" name="q" value={q} class="input" placeholder="z.B. BMW 320d, Golf, Automatik…" />
+          </div>
+
+          <div style="grid-column: span 4;">
+            <CustomSelect
+              name="hersteller"
+              label="Hersteller"
+              value={hersteller}
+              options={[
+                { value: "", label: "Alle" },
+                ...herstellerOptions.map((h: string) => ({ value: h, label: h })),
+              ]}
+            />
+          </div>
+
+          <div style="grid-column: span 4;">
+            <CustomSelect
+              name="kraftstoff"
+              label="Kraftstoff"
+              value={kraftstoff}
+              options={[
+                { value: "", label: "Alle" },
+                ...kraftstoffOptions.map((k: string) => ({ value: k, label: k })),
+              ]}
+            />
+          </div>
+
+          <div style="grid-column: span 4;">
+            <CustomSelect
+              name="getriebe"
+              label="Getriebe"
+              value={getriebe}
+              options={[
+                { value: "", label: "Alle" },
+                ...getriebeOptions.map((g: string) => ({ value: g, label: g })),
+              ]}
+            />
+          </div>
+
+          <div style="grid-column: span 3;">
+            <label class="small" for="preisMin">Preis ab (€)</label>
+            <input id="preisMin" name="preisMin" type="number" min="0" value={preisMin ?? ""} class="input" placeholder="z.B. 5000" />
+          </div>
+
+          <div style="grid-column: span 3;">
+            <label class="small" for="preisMax">Preis bis (€)</label>
+            <input id="preisMax" name="preisMax" type="number" min="0" value={preisMax ?? ""} class="input" placeholder="z.B. 15000" />
+          </div>
+
+          <div style="grid-column: span 3;">
+            <label class="small" for="kmMax">KM bis</label>
+            <input id="kmMax" name="kmMax" type="number" min="0" value={kmMax ?? ""} class="input" placeholder="z.B. 120000" />
+          </div>
+
+          <div style="grid-column: span 3;">
+            <CustomSelect
+              name="status"
+              label="Status"
+              value={status}
+              options={[
+                { value: "", label: "Alle" },
+                ...statusOptions.map((s: string) => ({ value: s, label: s })),
+              ]}
+            />
+          </div>
+
+          <div style="grid-column: span 3;">
+            <label class="small" for="ezMin">EZ ab (Jahr)</label>
+            <input id="ezMin" name="ezMin" type="number" min="1900" max="2099" value={ezMin ?? ""} class="input" placeholder="z.B. 2016" />
+          </div>
+
+          <div style="grid-column: span 3;">
+            <label class="small" for="ezMax">EZ bis (Jahr)</label>
+            <input id="ezMax" name="ezMax" type="number" min="1900" max="2099" value={ezMax ?? ""} class="input" placeholder="z.B. 2022" />
+          </div>
+
+          <div style="grid-column: span 4;">
+            <CustomSelect
+              name="sort"
+              label="Sortierung"
+              value={sort}
+              options={[
+                { value: "neu", label: "Neueste zuerst" },
+                { value: "preis-asc", label: "Preis aufsteigend" },
+                { value: "preis-desc", label: "Preis absteigend" },
+                { value: "km-asc", label: "KM aufsteigend" },
+                { value: "km-desc", label: "KM absteigend" },
+              ]}
+            />
+          </div>
+
+          <div style="grid-column: span 8; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
+            <a class="btn" href="/fahrzeuge/">Zurücksetzen</a>
+            <button class="btn primary" type="submit">Filtern</button>
+          </div>
+        </div>
+
+        <div class="small" style="margin-top:10px; opacity:.8;">
+          {autos.length} Fahrzeuge gefunden
+        </div>
+      </form>
+
+      <!-- RESULTS -->
+      <div class="grid" style="margin-top:16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:12px;">
+        {autos.map((auto: any) => <VehicleCard auto={auto} />)}
+      </div>
+
+      {autos.length === 0 && (
+        <div class="card" style="margin-top:14px; padding:16px;">
+          <h2 class="h2">Keine Treffer</h2>
+          <p class="p" style="margin-top:8px;">Passe die Filter an oder setze sie zurück.</p>
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>

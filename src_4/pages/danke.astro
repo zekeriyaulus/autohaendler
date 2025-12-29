@@ -1,0 +1,22 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { site, telHref } from "../config/site";
+---
+
+<BaseLayout
+  title={`Danke – ${site.name}`}
+  description={`Danke! Wir haben deine Nachricht erhalten.`}
+  noindex={true}
+>
+  <section class="card" style="padding:18px;max-width:720px;">
+    <h1 class="h1">Danke!</h1>
+    <p class="p" style="max-width:65ch;">
+      Wir haben deine Nachricht erhalten und melden uns so schnell wie möglich.
+    </p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;">
+      <a class="btn" href="/">Zur Startseite</a>
+      <a class="btn primary" href="/fahrzeuge/">Fahrzeuge ansehen</a>
+      <a class="btn" href={telHref(site.phones[0])}>Jetzt anrufen</a>
+    </div>
+  </section>
+</BaseLayout>

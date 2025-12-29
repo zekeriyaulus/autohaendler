@@ -1,0 +1,105 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import VehicleCard from "../components/VehicleCard.astro";
+import { site, telHref } from "../config/site";
+
+const modules = import.meta.glob("../data/cars/*.json", { eager: true });
+const autos = Object.values(modules).map((m) => (m as any).default ?? m);
+
+const sichtbareAutos = autos.filter((a) => (a as any).status !== "verkauft");
+const highlightAutos = sichtbareAutos.slice(0, 3);
+---
+
+<BaseLayout
+  title={`${site.name} – Gebrauchtwagen in ${site.address.city}`}
+  description={`${site.name}: Gebrauchtwagen, Autoankauf und Service in ${site.address.city}. Fahrzeuge ansehen, anrufen oder Nachricht senden.`}
+>
+  <section class="hero hero--home full-bleed" style={{ "--hero-bg": `url(${site.heroBackground})` }}>
+    <div class="hero__overlay"></div>
+    <div class="hero__inner">
+      <div class="chip">Bad Lippspringe · Paderborn Umgebung</div>
+      <h1 class="h1" style="margin-top:12px;">
+        Gebrauchtwagen, Ankauf &amp; Service – <span style="color:var(--brand)">{site.name}</span>
+      </h1>
+      <p class="p" style="max-width:62ch;">
+        Transparent, unkompliziert und schnell. Entdecke unseren Fahrzeugbestand oder
+        ruf direkt an – wir beraten dich gern.
+      </p>
+
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;">
+        <a class="btn primary" href="/fahrzeuge/">Fahrzeuge ansehen</a>
+        <a class="btn" href="/autoankauf/">Autoankauf / Inzahlungnahme</a>
+        <a class="btn" href={telHref(site.phones[0])}>Jetzt anrufen</a>
+      </div>
+
+      <div class="hero__facts">
+        <div class="hero__fact">
+          <div style="font-weight:900;">Standort</div>
+          <div class="small">{site.address.street}, {site.address.zip} {site.address.city}</div>
+        </div>
+        <div class="hero__fact">
+          <div style="font-weight:900;">Kontakt</div>
+          <div class="small">{site.phones[0]} · {site.phones[1]}</div>
+        </div>
+        <div class="hero__fact">
+          <div style="font-weight:900;">Live-Bestand</div>
+          <div class="small">Optional per mobile.de iFrame oder API</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:22px;">
+    <div class="grid" style="grid-template-columns:repeat(3, minmax(0,1fr));">
+      <div class="card" style="padding:16px;">
+        <div style="font-weight:900;">Geprüfte Fahrzeuge</div>
+        <p class="small" style="margin:8px 0 0;">Klare Angaben, faire Preise, schnelle Abwicklung.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <div style="font-weight:900;">Zulassung &amp; Beratung</div>
+        <p class="small" style="margin:8px 0 0;">Wir unterstützen bei Fragen rund um Kauf &amp; Übergabe.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <div style="font-weight:900;">Autoankauf</div>
+        <p class="small" style="margin:8px 0 0;">Einfach Daten senden – wir melden uns zeitnah.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="sep" />
+
+  <section>
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;">
+      <div>
+        <h2 class="h2">Aktuelle Highlights</h2>
+        <p class="small">Beispiele aus dem Bestand (Demo-Daten). Für Live-Bestand siehe „Live Bestand“.</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a class="btn" href="/fahrzeuge/live/">Live Bestand (mobile.de)</a>
+        <a class="btn primary" href="/fahrzeuge/">Alle Fahrzeuge</a>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:14px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));">
+      {highlightAutos.map((auto: any) => (
+        <VehicleCard auto={auto} />
+      ))}
+    </div>
+  </section>
+
+  <hr class="sep" />
+
+  <section class="card" style="padding:18px;display:grid;gap:14px;grid-template-columns:1.2fr .8fr;align-items:center;">
+    <div>
+      <h2 class="h2">Schnell Kontakt aufnehmen</h2>
+      <p class="p" style="margin:8px 0 0;">
+        Du hast ein Fahrzeug im Blick oder möchtest dein Auto verkaufen? Ruf uns an oder nutze das Kontaktformular.
+      </p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start;justify-content:center;">
+      <a class="btn primary" href="/kontakt/">Kontaktformular</a>
+      <a class="btn" href={telHref(site.phones[0])}>{site.phones[0]}</a>
+      <a class="btn" href={telHref(site.phones[1])}>{site.phones[1]}</a>
+    </div>
+  </section>
+</BaseLayout>

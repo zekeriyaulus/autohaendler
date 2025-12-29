@@ -1,0 +1,451 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { site } from "../../config/site.js";
+
+const title = "Fahrzeuge verwalten";
+---
+
+<BaseLayout title={title}>
+  <section class="container">
+    <h1>Fahrzeuge verwalten</h1>
+    <p class="hint">
+      Hier kannst du die Fahrzeugdaten aus <code>src/data/cars.json</code> direkt im Projekt bearbeiten.
+      <br />
+      <strong>Wichtig:</strong> Auf Netlify ist das Dateisystem zur Laufzeit in der Regel <em>nicht dauerhaft beschreibbar</em>.
+      Diese Seite ist primär für lokale Pflege (oder für Server mit persistentem Speicher) gedacht.
+    </p>
+
+    <div class="bar">
+      <button id="btnReload" class="btn">Neu laden</button>
+      <button id="btnNew" class="btn btnPrimary">Neues Fahrzeug</button>
+      <span class="spacer"></span>
+      <input id="search" class="input" placeholder="Suche (Titel/Hersteller/ID)..." />
+    </div>
+
+    <div class="grid">
+      <div class="list">
+        <div id="list" class="listInner" aria-live="polite"></div>
+      </div>
+
+      <div class="editor">
+        <form id="form" class="card">
+          <div class="cardHead">
+            <h2 id="formTitle">Fahrzeug</h2>
+            <div class="cardActions">
+              <button type="button" id="btnDelete" class="btn btnDanger" disabled>Löschen</button>
+              <button type="submit" class="btn btnPrimary">Speichern</button>
+            </div>
+          </div>
+
+          <div class="row">
+            <label>
+              ID (Slug)
+              <input id="id" class="input" required placeholder="z.B. vw-golf-7" />
+            </label>
+            <label>
+              Titel
+              <input id="titel" class="input" required placeholder="z.B. VW Golf VII" />
+            </label>
+          </div>
+
+          <div class="row">
+            <label>
+              Hersteller
+              <input id="hersteller" class="input" placeholder="z.B. VW" />
+            </label>
+            <label>
+              Preis (€)
+              <input id="preis" class="input" inputmode="numeric" placeholder="z.B. 12990" />
+            </label>
+          </div>
+
+          <div class="row">
+            <label>
+              Kilometer
+              <input id="km" class="input" inputmode="numeric" placeholder="z.B. 85000" />
+            </label>
+            <label>
+              Erstzulassung
+              <input id="ez" class="input" placeholder="z.B. 06/2018" />
+            </label>
+          </div>
+
+          <div class="row">
+            <label>
+              Kraftstoff
+              <input id="kraftstoff" class="input" placeholder="z.B. Diesel" />
+            </label>
+            <label>
+              Getriebe
+              <input id="getriebe" class="input" placeholder="z.B. Automatik" />
+            </label>
+          </div>
+
+          <div class="row">
+            <label>
+              Status
+              <select id="status" class="input">
+                <option value="verfügbar">verfügbar</option>
+                <option value="reserviert">reserviert</option>
+                <option value="verkauft">verkauft</option>
+              </select>
+            </label>
+            <label>
+              Standort (optional)
+              <input id="standort" class="input" placeholder="z.B. Bad Lippspringe" />
+            </label>
+          </div>
+
+          <label>
+            Bilder (je Zeile ein Pfad, z.B. <code>/uploads/auto-1.jpg</code>)
+            <textarea id="bilder" class="textarea" rows="4" placeholder="/uploads/auto-1.jpg"></textarea>
+          </label>
+
+          <details class="advanced">
+            <summary>Erweiterte Felder (JSON)</summary>
+            <p class="hint">
+              Hier kannst du zusätzliche Felder bearbeiten, die du im Frontend nutzt (z.B. <code>details</code>).
+              Änderungen werden 1:1 gespeichert.
+            </p>
+            <textarea id="extra" class="textarea mono" rows="12" spellcheck="false"></textarea>
+          </details>
+
+          <p id="statusMsg" class="status" role="status"></p>
+        </form>
+
+        <div class="card uploadCard">
+          <h2>Bilder hochladen (optional)</h2>
+          <p class="hint">Speichert Dateien nach <code>public/uploads/</code> (nur wenn Server-Dateisystem beschreibbar ist).</p>
+          <div class="row">
+            <input id="upload" type="file" accept="image/*" multiple />
+            <button id="btnUpload" class="btn">Upload</button>
+          </div>
+          <p id="uploadMsg" class="status" role="status"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .container{max-width:1100px;margin:0 auto;padding:2rem 1rem;}
+    h1{margin:0 0 1rem;}
+    .hint{opacity:.85;line-height:1.4}
+    .bar{display:flex;gap:.75rem;align-items:center;margin:1.25rem 0;}
+    .spacer{flex:1}
+    .grid{display:grid;grid-template-columns:1fr 1.2fr;gap:1rem;align-items:start}
+    @media (max-width: 900px){.grid{grid-template-columns:1fr}}
+    .listInner{display:flex;flex-direction:column;gap:.5rem}
+    .item{display:flex;justify-content:space-between;gap:.75rem;align-items:center;padding:.75rem;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.04);cursor:pointer}
+    .item:hover{background:rgba(255,255,255,.07)}
+    .item strong{display:block}
+    .muted{opacity:.8;font-size:.9rem}
+    .badge{padding:.2rem .5rem;border-radius:999px;border:1px solid rgba(255,255,255,.14);font-size:.8rem;opacity:.9}
+    .card{border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.04);padding:1rem}
+    .cardHead{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:.75rem}
+    .cardActions{display:flex;gap:.5rem;flex-wrap:wrap}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:.75rem 0}
+    @media (max-width: 900px){.row{grid-template-columns:1fr}}
+    label{display:flex;flex-direction:column;gap:.35rem;font-weight:600}
+    code{font-size:.9em}
+    .input,.textarea,select{border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.25);color:inherit;border-radius:12px;padding:.6rem .75rem}
+    .textarea{resize:vertical}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-weight:400}
+    .btn{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:inherit;border-radius:12px;padding:.55rem .9rem;cursor:pointer;font-weight:700}
+    .btn:hover{background:rgba(255,255,255,.10)}
+    .btnPrimary{background:rgba(56,189,248,.18);border-color:rgba(56,189,248,.35)}
+    .btnPrimary:hover{background:rgba(56,189,248,.25)}
+    .btnDanger{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.35)}
+    .btnDanger:hover{background:rgba(239,68,68,.22)}
+    .status{margin:.75rem 0 0;min-height:1.2em;opacity:.9}
+    details.advanced{margin-top:.75rem}
+    details.advanced summary{cursor:pointer;font-weight:800;margin-bottom:.5rem}
+    .uploadCard{margin-top:1rem}
+  </style>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    const els = {
+      list: $("list"),
+      search: $("search"),
+      btnReload: $("btnReload"),
+      btnNew: $("btnNew"),
+      btnDelete: $("btnDelete"),
+      form: $("form"),
+      formTitle: $("formTitle"),
+      statusMsg: $("statusMsg"),
+      upload: $("upload"),
+      btnUpload: $("btnUpload"),
+      uploadMsg: $("uploadMsg"),
+      fields: {
+        id: $("id"),
+        titel: $("titel"),
+        hersteller: $("hersteller"),
+        preis: $("preis"),
+        km: $("km"),
+        ez: $("ez"),
+        kraftstoff: $("kraftstoff"),
+        getriebe: $("getriebe"),
+        status: $("status"),
+        standort: $("standort"),
+        bilder: $("bilder"),
+        extra: $("extra"),
+      }
+    };
+
+    let cars = [];
+    let selectedId = null;
+
+    const api = {
+      async list(){
+        const r = await fetch("/api/admin/cars", { headers: authHeader() });
+        if(!r.ok) throw new Error(await r.text());
+        return await r.json();
+      },
+      async save(allCars){
+        const r = await fetch("/api/admin/cars", {
+          method: "PUT",
+          headers: { "content-type": "application/json", ...authHeader() },
+          body: JSON.stringify(allCars)
+        });
+        if(!r.ok) throw new Error(await r.text());
+        return await r.json();
+      },
+      async upload(files){
+        const fd = new FormData();
+        for (const f of files) fd.append("files", f);
+        const r = await fetch("/api/admin/upload", { method:"POST", headers: authHeader(), body: fd });
+        if(!r.ok) throw new Error(await r.text());
+        return await r.json();
+      }
+    };
+
+    function authHeader(){
+      // Optional: Basic Auth über ADMIN_USER/ADMIN_PASS (serverseitig geprüft).
+      // Für den Browser brauchst du dann im Prompt Username/Passwort. Alternativ: leer lassen.
+      return {};
+    }
+
+    function setStatus(msg, isError=false){
+      els.statusMsg.textContent = msg || "";
+      els.statusMsg.style.color = isError ? "var(--red, #ef4444)" : "";
+    }
+    function setUploadStatus(msg, isError=false){
+      els.uploadMsg.textContent = msg || "";
+      els.uploadMsg.style.color = isError ? "var(--red, #ef4444)" : "";
+    }
+
+    function normalizeNumber(v){
+      const s = String(v ?? "").trim();
+      if(!s) return null;
+      const n = Number(s.replace(/[^\d.-]/g, ""));
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function pickExtra(obj){
+      const baseKeys = new Set(["id","titel","hersteller","preis","km","ez","kraftstoff","getriebe","status","standort","bilder"]);
+      const extra = {};
+      for (const [k,v] of Object.entries(obj || {})){
+        if(!baseKeys.has(k)) extra[k] = v;
+      }
+      return extra;
+    }
+
+    function renderList(){
+      const q = (els.search.value || "").toLowerCase().trim();
+      const filtered = cars.filter(c => {
+        const hay = `${c.id||""} ${c.titel||""} ${c.hersteller||""}`.toLowerCase();
+        return !q || hay.includes(q);
+      });
+
+      els.list.innerHTML = "";
+      if(filtered.length === 0){
+        els.list.innerHTML = `<div class="muted">Keine Fahrzeuge gefunden.</div>`;
+        return;
+      }
+
+      for (const c of filtered){
+        const div = document.createElement("button");
+        div.type = "button";
+        div.className = "item";
+        div.setAttribute("aria-pressed", c.id === selectedId ? "true" : "false");
+        div.innerHTML = `
+          <div>
+            <strong>${escapeHtml(c.titel || c.id || "Ohne Titel")}</strong>
+            <div class="muted">${escapeHtml(c.hersteller || "")} • ${escapeHtml(String(c.preis ?? ""))} € • ${escapeHtml(String(c.km ?? ""))} km</div>
+          </div>
+          <span class="badge">${escapeHtml(c.status || "verfügbar")}</span>
+        `;
+        div.addEventListener("click", () => select(c.id));
+        els.list.appendChild(div);
+      }
+    }
+
+    function resetForm(){
+      selectedId = null;
+      els.formTitle.textContent = "Neues Fahrzeug";
+      els.btnDelete.disabled = true;
+      for (const k in els.fields){
+        if(k === "status") els.fields[k].value = "verfügbar";
+        else els.fields[k].value = "";
+      }
+      els.fields.extra.value = "{}";
+      setStatus("");
+    }
+
+    function select(id){
+      const car = cars.find(c => c.id === id);
+      if(!car) return;
+      selectedId = id;
+      els.formTitle.textContent = `Fahrzeug: ${id}`;
+      els.btnDelete.disabled = false;
+
+      els.fields.id.value = car.id ?? "";
+      els.fields.titel.value = car.titel ?? "";
+      els.fields.hersteller.value = car.hersteller ?? "";
+      els.fields.preis.value = car.preis ?? "";
+      els.fields.km.value = car.km ?? "";
+      els.fields.ez.value = car.ez ?? "";
+      els.fields.kraftstoff.value = car.kraftstoff ?? "";
+      els.fields.getriebe.value = car.getriebe ?? "";
+      els.fields.status.value = car.status ?? "verfügbar";
+      els.fields.standort.value = car.standort ?? "";
+      els.fields.bilder.value = Array.isArray(car.bilder) ? car.bilder.join("\n") : "";
+
+      const extra = pickExtra(car);
+      els.fields.extra.value = JSON.stringify(extra, null, 2);
+      setStatus("");
+      renderList();
+    }
+
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g, (m) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
+    }
+
+    function buildCarFromForm(){
+      const id = els.fields.id.value.trim();
+      const titel = els.fields.titel.value.trim();
+      const hersteller = els.fields.hersteller.value.trim();
+      const preis = normalizeNumber(els.fields.preis.value);
+      const km = normalizeNumber(els.fields.km.value);
+      const ez = els.fields.ez.value.trim();
+      const kraftstoff = els.fields.kraftstoff.value.trim();
+      const getriebe = els.fields.getriebe.value.trim();
+      const status = els.fields.status.value;
+      const standort = els.fields.standort.value.trim();
+      const bilder = (els.fields.bilder.value || "").split("\n").map(s => s.trim()).filter(Boolean);
+
+      let extra = {};
+      try{
+        extra = JSON.parse(els.fields.extra.value || "{}");
+        if(extra && typeof extra !== "object") extra = {};
+      }catch(e){
+        throw new Error("Erweiterte Felder (JSON) sind ungültig.");
+      }
+
+      const car = {
+        id, titel,
+        ...(hersteller ? { hersteller } : {}),
+        ...(kraftstoff ? { kraftstoff } : {}),
+        ...(getriebe ? { getriebe } : {}),
+        ...(preis !== null ? { preis } : {}),
+        ...(km !== null ? { km } : {}),
+        ...(ez ? { ez } : {}),
+        ...(status ? { status } : {}),
+        ...(standort ? { standort } : {}),
+        ...(bilder.length ? { bilder } : {}),
+        ...extra
+      };
+      return car;
+    }
+
+    async function load(){
+      setStatus("Lade...");
+      try{
+        cars = await api.list();
+        if(!Array.isArray(cars)) cars = [];
+        setStatus(`Geladen: ${cars.length} Fahrzeuge`);
+        renderList();
+        if(cars.length && !selectedId) select(cars[0].id);
+        if(!cars.length) resetForm();
+      }catch(e){
+        console.error(e);
+        setStatus("Fehler beim Laden: " + (e.message || e), true);
+      }
+    }
+
+    async function saveAll(nextCars){
+      setStatus("Speichere...");
+      try{
+        const saved = await api.save(nextCars);
+        cars = saved;
+        setStatus("Gespeichert ✅");
+        renderList();
+      }catch(e){
+        console.error(e);
+        setStatus("Fehler beim Speichern: " + (e.message || e), true);
+      }
+    }
+
+    els.btnReload.addEventListener("click", load);
+    els.btnNew.addEventListener("click", resetForm);
+    els.search.addEventListener("input", renderList);
+
+    els.form.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      try{
+        const car = buildCarFromForm();
+        if(!car.id) return setStatus("Bitte eine ID vergeben.", true);
+        if(!car.titel) return setStatus("Bitte einen Titel vergeben.", true);
+
+        const existingIdx = cars.findIndex(c => c.id === selectedId);
+        const idClash = cars.some(c => c.id === car.id && c.id !== selectedId);
+        if(idClash) return setStatus("Diese ID existiert bereits. Bitte andere ID wählen.", true);
+
+        let next = [...cars];
+        if(existingIdx >= 0){
+          next[existingIdx] = car;
+        }else{
+          next = [car, ...next];
+        }
+        selectedId = car.id;
+        await saveAll(next);
+        select(selectedId);
+      }catch(e){
+        setStatus(e.message || String(e), true);
+      }
+    });
+
+    els.btnDelete.addEventListener("click", async () => {
+      if(!selectedId) return;
+      if(!confirm(`Fahrzeug "${selectedId}" wirklich löschen?`)) return;
+      const next = cars.filter(c => c.id !== selectedId);
+      selectedId = null;
+      await saveAll(next);
+      if(next.length) select(next[0].id);
+      else resetForm();
+    });
+
+    els.btnUpload.addEventListener("click", async () => {
+      const files = els.upload.files;
+      if(!files || !files.length) return setUploadStatus("Bitte Dateien auswählen.", true);
+      setUploadStatus("Lade hoch...");
+      try{
+        const res = await api.upload(files);
+        const uploaded = res?.files || [];
+        setUploadStatus(`Upload OK: ${uploaded.length} Datei(en).`);
+        if(uploaded.length){
+          // Convenience: hänge Pfade an Bilder-Textarea an
+          const existing = els.fields.bilder.value.trim();
+          const next = [existing, ...uploaded.map(f => f.publicPath)].filter(Boolean).join("\n");
+          els.fields.bilder.value = next;
+        }
+      }catch(e){
+        console.error(e);
+        setUploadStatus("Upload Fehler: " + (e.message || e), true);
+      }
+    });
+
+    load();
+  </script>
+</BaseLayout>

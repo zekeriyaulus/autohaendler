@@ -1,0 +1,63 @@
+---
+import { site } from "../config/site";
+
+const { pathname = "/" } = Astro.props;
+
+const nav = [
+  { href: "/", label: "Start" },
+  { href: "/fahrzeuge/", label: "Fahrzeuge" },
+  { href: "/autoankauf/", label: "Autoankauf" },
+  { href: "/kontakt/", label: "Kontakt" },
+];
+
+// Optionaler Admin-Link (standardmäßig aus)
+const showAdmin = import.meta.env.SHOW_ADMIN_LINK === "true";
+if (showAdmin) nav.push({ href: "/admin/fahrzeuge/", label: "Admin" });
+
+const isActive = (href) => {
+  if (href === "/") return pathname === "/";
+  return pathname.startsWith(href);
+};
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/">
+      <span class="brand-name">{site.name}</span>
+      <span class="brand-tagline">{site.tagline}</span>
+    </a>
+
+    <nav class="site-nav" aria-label="Hauptnavigation">
+      {nav.map((n) => (
+        <a class={isActive(n.href) ? "nav-link active" : "nav-link"} href={n.href}>{n.label}</a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header{
+    position:sticky; top:0; z-index:50;
+    backdrop-filter:saturate(160%) blur(12px);
+    background:rgba(0,0,0,.55);
+    border-bottom:1px solid rgba(255,255,255,.10);
+  }
+  .header-inner{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;}
+  .brand{text-decoration:none;display:flex;flex-direction:column;gap:2px;min-width:160px}
+  .brand-name{font-weight:900;letter-spacing:.2px}
+  .brand-tagline{font-size:.86rem;opacity:.85}
+  .site-nav{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+  .nav-link{
+    text-decoration:none;
+    border:1px solid rgba(255,255,255,.16);
+    background:rgba(255,255,255,.06);
+    padding:8px 12px;
+    border-radius:999px;
+    font-weight:800;
+  }
+  .nav-link:hover{background:rgba(255,255,255,.10)}
+  .nav-link.active{
+    background:rgba(56,189,248,.18);
+    border-color:rgba(56,189,248,.35);
+  }
+</style>

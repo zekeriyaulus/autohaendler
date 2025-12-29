@@ -1,0 +1,77 @@
+---
+const { auto } = Astro.props;
+
+const details = auto?.details ?? {};
+const fahrzeugart = details.fahrzeugart ?? "";
+const kw = details.leistung_kw ?? details.kw ?? null;
+const ps = details.leistung_ps ?? details.ps ?? null;
+const verbrauch = details.verbrauch ?? "";
+const co2 = details.co2_g_km ?? details.co2 ?? null;
+
+const firstImage = Array.isArray(auto?.bilder) ? auto.bilder[0] : null;
+
+const fmt = (n) => {
+  if (n === null || n === undefined || n === "") return "–";
+  const num = Number(n);
+  return Number.isFinite(num) ? num.toLocaleString("de-DE") : String(n);
+};
+
+const price = fmt(auto?.preis);
+const km = fmt(auto?.km);
+const ez = auto?.ez ?? "–";
+
+const badge = fahrzeugart || (auto?.status === "verkauft" ? "Verkauft" : auto?.status === "reserviert" ? "Reserviert" : "");
+---
+<a href={`/fahrzeuge/${auto.id}`} class="vehicle-card__link">
+  <article class="card vehicle-card">
+    <div class="vehicle-card__media">
+      {firstImage ? (
+        <img src={firstImage} alt={auto.titel} loading="lazy" decoding="async" />
+      ) : (
+        <div class="vehicle-card__noimg">Kein Bild</div>
+      )}
+
+      {badge && <span class="vehicle-card__badge">{badge}</span>}
+    </div>
+
+    <div class="vehicle-card__body">
+      <div class="vehicle-card__title">{auto.titel}</div>
+
+      <div class="vehicle-card__specs">
+        <div class="vehicle-card__spec">
+          <span class="vehicle-card__ico" aria-hidden="true">⚡</span>
+          <span>{kw !== null || ps !== null ? `${kw ? `${fmt(kw)} kW` : ""}${kw && ps ? " (" : ""}${ps ? `${fmt(ps)} PS` : ""}${kw && ps ? ")" : ""}` : "–"}</span>
+        </div>
+        <div class="vehicle-card__spec">
+          <span class="vehicle-card__ico" aria-hidden="true">⛽</span>
+          <span>{auto.kraftstoff ?? "–"}</span>
+        </div>
+        <div class="vehicle-card__spec">
+          <span class="vehicle-card__ico" aria-hidden="true">🕹️</span>
+          <span>{auto.getriebe ?? "–"}</span>
+        </div>
+        <div class="vehicle-card__spec">
+          <span class="vehicle-card__ico" aria-hidden="true">📅</span>
+          <span>{ez}</span>
+        </div>
+        <div class="vehicle-card__spec">
+          <span class="vehicle-card__ico" aria-hidden="true">🛣️</span>
+          <span>{km} km</span>
+        </div>
+      </div>
+
+      {(verbrauch || co2 !== null) && (
+        <div class="vehicle-card__meta">
+          {verbrauch && <span>{verbrauch}</span>}
+          {verbrauch && co2 !== null && <span class="vehicle-card__dot">·</span>}
+          {co2 !== null && <span>{fmt(co2)} g CO₂/km</span>}
+        </div>
+      )}
+
+      <div class="vehicle-card__price">
+        <span class="vehicle-card__priceNum">{price} €</span>
+        <span class="vehicle-card__priceSub">inkl. MwSt.</span>
+      </div>
+    </div>
+  </article>
+</a>

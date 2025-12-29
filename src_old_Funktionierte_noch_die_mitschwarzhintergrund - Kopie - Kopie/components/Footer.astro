@@ -1,0 +1,23 @@
+---
+import { site, telHref } from "../config/site";
+---
+<footer style="margin-top:42px;border-top:1px solid var(--line);padding:26px 0 36px;">
+  <div class="container" style="display:grid;gap:16px;grid-template-columns: 1.4fr 1fr;">
+    <div>
+      <div style="font-weight:900;">{site.name}</div>
+      <div class="small" style="margin-top:6px;">{site.address.street}, {site.address.zip} {site.address.city}, {site.address.country}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;">
+        {site.phones.map((p) => (
+          <a class="btn" href={telHref(p)}>{p}</a>
+        ))}
+      </div>
+      <p class="small" style="margin-top:12px;">Daten basieren auf dem öffentlichen Händlerprofil bei mobile.de.</p>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start;justify-content:flex-end;">
+      <a class="btn" href="/fahrzeuge/">Fahrzeuge ansehen</a>
+      <a class="btn primary" href="/kontakt/">Kontakt & Anfahrt</a>
+      <span class="small">© {new Date().getFullYear()} {site.name}</span>
+    </div>
+  </div>
+</footer>

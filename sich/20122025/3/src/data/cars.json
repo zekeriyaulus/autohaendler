@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1",
+    "titel": "BMW 320d Touring",
+    "hersteller": "BMW",
+    "kraftstoff": "Diesel",
+    "getriebe": "Automatik",
+
+    "preis": 18990,
+    "km": 98000,
+    "ez": "06/2019",
+    "status": "reserviert",
+    "bilder": ["/uploads/bmw.jpg"]
+  },
+  {
+    "id": "2",
+    "titel": "VW Golf 7 1.6 TDI",
+    "hersteller": "Volkswagen",
+    "kraftstoff": "Diesel",
+    "getriebe": "Schaltgetriebe",
+
+    "preis": 12990,
+    "km": 135000,
+    "ez": "04/2018",
+    "status": "verfügbar",
+    "bilder": ["/uploads/golf.jpg"]
+  },
+  {
+    "id": "audi-a4-avant",
+    "titel": "Audi A4 Avant",
+    "preis": 20990,
+    "km": 76000,
+    "ez": "03/2020",
+    "status": "verkauft",
+    "bilder": []
+  }
+]
+  

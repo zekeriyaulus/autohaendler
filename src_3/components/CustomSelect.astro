@@ -1,0 +1,47 @@
+---
+type Option = { value: string; label: string };
+
+const {
+  name,
+  label,
+  value = "",
+  options = [],
+}: {
+  name: string;
+  label: string;
+  value?: string;
+  options: Option[];
+} = Astro.props;
+
+const current = options.find((o) => o.value === value) ?? options[0];
+---
+
+<div class="cselect" data-cselect>
+  <label class="small" for={"cs_" + name}>{label}</label>
+
+  <button
+    id={"cs_" + name}
+    class="cselect__btn"
+    type="button"
+    aria-haspopup="listbox"
+    aria-expanded="false"
+  >
+    <span class="cselect__btnText">{current?.label ?? "Auswählen"}</span>
+    <span class="cselect__chev">▾</span>
+  </button>
+
+  <input type="hidden" name={name} value={value} />
+
+  <ul class="cselect__list" role="listbox" tabindex="-1">
+    {options.map((opt) => (
+      <li
+        class={"cselect__opt" + (opt.value === value ? " is-selected" : "")}
+        role="option"
+        aria-selected={opt.value === value ? "true" : "false"}
+        data-value={opt.value}
+      >
+        {opt.label}
+      </li>
+    ))}
+  </ul>
+</div>

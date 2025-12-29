@@ -1,0 +1,125 @@
+:root{
+  /* Light/clean like the reference site (weißes Layout, Akzent Rot/Schwarz) */
+  --bg:#f6f7f9;
+  --card:#ffffff;
+  --muted:#5b6472;
+  --text:#111318;
+  --brand:#c40000; /* Rot-Akzent */
+  --line:rgba(17,19,24,.12);
+  --shadow: 0 10px 26px rgba(17,19,24,.10);
+  --radius: 18px;
+  --max: 1120px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;background:var(--bg);color:var(--text)}
+a{color:inherit}
+.container{max-width:var(--max);margin:0 auto;padding:0 18px}
+
+/* Full-bleed sections inside the main container */
+.full-bleed{width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:10px 14px;border-radius:999px;border:1px solid var(--line);text-decoration:none;font-weight:700;transition:transform .12s ease, border-color .12s ease, background .12s ease}
+.btn{background:rgba(255,255,255,.9)}
+.btn:hover{transform:translateY(-1px);border-color:rgba(196,0,0,.45)}
+.btn.primary{background:var(--brand);border-color:rgba(196,0,0,.75);color:#fff}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.h1{font-size:clamp(28px,3vw,40px);line-height:1.08;margin:0}
+.h2{font-size:22px;margin:0}
+.p{color:var(--muted);line-height:1.6}
+.grid{display:grid;gap:16px}
+hr.sep{border:none;border-top:1px solid var(--line);margin:26px 0}
+.small{font-size:13px;color:var(--muted)}
+input,select,textarea{width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--text)}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+
+/* Header */
+.site-header{position:sticky;top:0;z-index:20;background:#0b0f14;color:#fff;border-bottom:4px solid var(--brand)}
+.site-header .small{color:rgba(255,255,255,.75)}
+.site-nav a{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.06);color:#fff}
+.site-nav a:hover{border-color:rgba(255,255,255,.5)}
+.site-nav a.primary{background:var(--brand);border-color:rgba(196,0,0,.85)}
+
+/* Hero */
+.hero{position:relative;overflow:hidden;min-height:420px}
+.hero.hero--home{border-radius:0;border-left:0;border-right:0}
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:var(--hero-bg, none);
+  background-size:cover;
+  background-position:center;
+  filter:saturate(1.1) contrast(1.02);
+  transform:scale(1.02);
+  pointer-events:none; /* ✅ wichtig */
+}
+.hero__overlay{
+  position:absolute;
+  inset:0;
+  /* Kein „schwarzer Hintergrund“ mehr – nur eine helle Lesbarkeits-Overlay */
+  background:linear-gradient(90deg, rgba(255,255,255,.92) 0%, rgba(255,255,255,.78) 55%, rgba(255,255,255,.86) 100%);
+  pointer-events:none; /* ✅ wichtig */
+}
+.hero__inner{position:relative; z-index:1; padding:22px;max-width:980px}
+
+.hero__facts{margin-top:18px;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.hero__fact{padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+
+/* In Light-Theme sollen „Facts“ auch weiß wirken */
+.hero__fact{background:rgba(255,255,255,.86)}
+
+/* Utility */
+.visually-hidden{position:absolute!important;left:-9999px!important;top:auto!important;width:1px!important;height:1px!important;overflow:hidden!important}
+
+
+
+/* Custom Select (perfektes Hover/Selected, ohne OS-Bugs) */
+.cselect{position:relative}
+.cselect__btn{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:11px 12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--text);
+  cursor:pointer;
+}
+.cselect__btn:focus{outline:2px solid rgba(196,0,0,.35);outline-offset:2px}
+.cselect__chev{opacity:.7}
+
+.cselect__list{
+  position:absolute;
+  top:calc(100% + 6px);
+  left:0;
+  right:0;
+  z-index:80;
+  margin:0;
+  padding:6px 0;
+  list-style:none;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  display:none;
+  max-height:260px;
+  overflow:auto;
+}
+
+.cselect.is-open .cselect__list{display:block}
+.cselect__opt{
+  padding:10px 14px;
+  cursor:pointer;
+  color:var(--text);
+}
+.cselect__opt:hover{
+  background:rgba(196,0,0,.08);
+  color:var(--text);
+}
+.cselect__opt.is-selected{
+  background:rgba(196,0,0,.12);
+  font-weight:700;
+}

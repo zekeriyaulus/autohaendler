@@ -1,0 +1,9 @@
+{
+  "id": "vw-golf-7",
+  "titel": "VW Golf 7 1.6 TDI",
+  "preis": 12990,
+  "km": 135000,
+  "ez": "04/2018",
+  "status": "verfuegbar",
+  "bilder": ["/uploads/golf-1.jpg", "/uploads/golf-2.jpg"]
+}

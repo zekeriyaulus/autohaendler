@@ -1,0 +1,23 @@
+---
+import { site } from "../config/site";
+const nav = [
+  { href: "/", label: "Start" },
+  { href: "/fahrzeuge/", label: "Fahrzeuge" },
+  { href: "/autoankauf/", label: "Autoankauf" },
+  { href: "/kontakt/", label: "Kontakt" },
+];
+---
+<header style="position:sticky;top:0;z-index:20;backdrop-filter: blur(10px);background:rgba(11,15,20,.78);border-bottom:1px solid var(--line);">
+  <div class="container" style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;">
+    <a href="/" style="text-decoration:none;display:flex;flex-direction:column;gap:2px;">
+      <span style="font-weight:900;letter-spacing:.2px;">{site.name}</span>
+      <span class="small">{site.tagline}</span>
+    </a>
+
+    <nav style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+      {nav.map((n) => (
+        <a class="btn" href={n.href} style="padding:8px 12px;font-weight:800;">{n.label}</a>
+      ))}
+    </nav>
+  </div>
+</header>
