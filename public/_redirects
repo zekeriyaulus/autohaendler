@@ -1,0 +1,3 @@
+/admin/*   /admin/:splat   200
+/api/*     /api/:splat     200
+/*         /maintenance    302!

@@ -1,10 +1,14 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getCars } from "../../lib/carsStore";
+import autosData from "../../data/cars.json";
 import { site, telHref } from "../../config/site.js";
 
+export function getStaticPaths() {
+  const autos = Array.isArray(autosData) ? autosData : (autosData?.default ?? []);
+  return autos.map((auto: any) => ({ params: { id: String(auto.id) } }));
+}
 
-const autos = await getCars();
+const autos = Array.isArray(autosData) ? autosData : (autosData?.default ?? []);
 const { id } = Astro.params;
 const auto = autos.find((a: any) => String(a.id) === String(id));
 

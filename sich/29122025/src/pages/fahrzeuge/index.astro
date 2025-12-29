@@ -2,10 +2,11 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import VehicleCard from "../../components/VehicleCard.astro";
 import CustomSelect from "../../components/CustomSelect.astro";
-import { getCars } from "../../lib/carsStore";
+import autosData from "../../data/cars.json";
 import { site } from "../../config/site.js";
 
-const autosAll = await getCars();
+const autosAll = Array.isArray(autosData) ? autosData : (autosData?.default ?? []);
+
 // Helper: sicher zu Number
 const num = (v: any) => {
   const s = String(v ?? "").trim();
