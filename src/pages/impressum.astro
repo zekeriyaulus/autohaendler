@@ -1,0 +1,43 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { site } from "../config/site";
+
+const title = `Impressum – ${site.name}`;
+const description = `Impressum und rechtliche Angaben von ${site.name}.`;
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="card" style="padding:22px;max-width:920px;margin:0 auto;">
+    <h1 style="margin:0 0 10px;">Impressum</h1>
+    <p class="small" style="margin-top:0;opacity:.9;">
+      Angaben gemäß § 5 DDG.
+    </p>
+
+    <h2 style="margin:18px 0 8px;">Händlerangaben</h2>
+    <p style="margin:0;">
+      <strong>{site.name}</strong><br />
+      {site.address.street}<br />
+      {site.address.zip} {site.address.city}<br />
+      {site.address.country}
+    </p>
+
+    <h2 style="margin:18px 0 8px;">Kontakt</h2>
+    <ul style="margin:0; padding-left:18px;">
+      {site.phones.map((p) => (
+        <li>Telefon: {p}</li>
+      ))}
+    </ul>
+
+    <h2 style="margin:18px 0 8px;">Quelle der Basisdaten</h2>
+    <p class="small" style="margin:0;">
+      Die oben genannten Händlerdaten basieren auf dem öffentlichen Händlerprofil bei mobile.de.
+    </p>
+
+    <div style="margin-top:18px; display:flex; flex-wrap:wrap; gap:10px;">
+      <a class="btn" href={`https://home.mobile.de/${site.mobileDealerSlug}#imprint`} rel="nofollow" target="_blank">
+        Händler-Impressum bei mobile.de ansehen
+      </a>
+      <a class="btn" href="/kontakt/">Kontaktseite</a>
+    </div>
+  </section>
+</BaseLayout>

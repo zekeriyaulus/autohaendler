@@ -120,6 +120,7 @@
     "km": 119000,
     "ez": "06/2018",
     "status": "verfügbar",
+    "highlight": true,
     "bilder": [
       "/uploads/bmw-1.jpg"
     ],
@@ -162,7 +163,28 @@
       "standort": "Bad Lippspringe",
       "plz": "33175",
       "land": "DE"
-    }
+    },
+    "highlightOrder": 1
+  },
+  {
+    "id": "vw-golf-7",
+    "titel": "VW Golf 7 1.6 TDI",
+    "hersteller": "VW",
+    "kraftstoff": "Diesel",
+    "getriebe": "Schaltgetriebe",
+    "preis": 12990,
+    "km": 135000,
+    "ez": "04/2018",
+    "status": "verfügbar",
+    "highlight": true,
+    "bilder": [
+      "/uploads/golf-1.jpg",
+      "/uploads/golf-2.jpg"
+    ],
+    "details": {
+      "fahrzeugart": "Gebrauchtwagen"
+    },
+    "highlightOrder": 2
   },
   {
     "id": "citroën-29",

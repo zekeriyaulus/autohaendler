@@ -90,6 +90,14 @@ const title = "Fahrzeuge verwalten";
                 <option value="verkauft">verkauft</option>
               </select>
             </label>
+            <label class="check">
+              <span>Highlight (Startseite)</span>
+              <input id="highlight" type="checkbox" />
+            </label>
+            <label>
+              Highlight-Reihenfolge (optional)
+              <input id="highlightOrder" class="input" inputmode="numeric" placeholder="z.B. 1" />
+            </label>
             <label>
               Standort (optional)
               <input id="standort" class="input" placeholder="z.B. Bad Lippspringe" />
@@ -143,9 +151,12 @@ const title = "Fahrzeuge verwalten";
     .card{border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.04);padding:1rem}
     .cardHead{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:.75rem}
     .cardActions{display:flex;gap:.5rem;flex-wrap:wrap}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:.75rem 0}
+    .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem;margin:.75rem 0}
     @media (max-width: 900px){.row{grid-template-columns:1fr}}
     label{display:flex;flex-direction:column;gap:.35rem;font-weight:600}
+    label.check{flex-direction:row;align-items:center;justify-content:space-between;gap:.75rem}
+    label.check span{font-weight:700}
+    label.check input{width:20px;height:20px}
     code{font-size:.9em}
     .input,.textarea,select{border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.25);color:inherit;border-radius:12px;padding:.6rem .75rem}
     .textarea{resize:vertical}
@@ -187,6 +198,8 @@ const title = "Fahrzeuge verwalten";
         kraftstoff: $("kraftstoff"),
         getriebe: $("getriebe"),
         status: $("status"),
+        highlight: $("highlight"),
+        highlightOrder: $("highlightOrder"),
         standort: $("standort"),
         bilder: $("bilder"),
         extra: $("extra"),
@@ -243,7 +256,7 @@ const title = "Fahrzeuge verwalten";
     }
 
     function pickExtra(obj){
-      const baseKeys = new Set(["id","titel","hersteller","preis","km","ez","kraftstoff","getriebe","status","standort","bilder"]);
+      const baseKeys = new Set(["id","titel","hersteller","preis","km","ez","kraftstoff","getriebe","status","highlight","highlightOrder","standort","bilder"]);
       const extra = {};
       for (const [k,v] of Object.entries(obj || {})){
         if(!baseKeys.has(k)) extra[k] = v;
@@ -287,8 +300,11 @@ const title = "Fahrzeuge verwalten";
       els.btnDelete.disabled = true;
       for (const k in els.fields){
         if(k === "status") els.fields[k].value = "verfügbar";
+        else if (k === "highlight") els.fields[k].checked = false;
         else els.fields[k].value = "";
       }
+      // Komfort: Reihenfolge-Feld nur aktiv, wenn Highlight gesetzt ist
+      els.fields.highlightOrder.disabled = true;
       els.fields.extra.value = "{}";
       setStatus("");
     }
@@ -309,6 +325,9 @@ const title = "Fahrzeuge verwalten";
       els.fields.kraftstoff.value = car.kraftstoff ?? "";
       els.fields.getriebe.value = car.getriebe ?? "";
       els.fields.status.value = car.status ?? "verfügbar";
+      els.fields.highlight.checked = car.highlight === true;
+      els.fields.highlightOrder.disabled = !(car.highlight === true);
+      els.fields.highlightOrder.value = car.highlightOrder ?? "";
       els.fields.standort.value = car.standort ?? "";
       els.fields.bilder.value = Array.isArray(car.bilder) ? car.bilder.join("\n") : "";
 
@@ -317,6 +336,13 @@ const title = "Fahrzeuge verwalten";
       setStatus("");
       renderList();
     }
+
+    // Komfort: Reihenfolge-Feld nur aktiv, wenn Highlight gesetzt ist
+    els.fields.highlight.addEventListener("change", () => {
+      const on = !!els.fields.highlight.checked;
+      els.fields.highlightOrder.disabled = !on;
+      if(!on) els.fields.highlightOrder.value = "";
+    });
 
     function escapeHtml(str){
       return String(str).replace(/[&<>"']/g, (m) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
@@ -332,6 +358,8 @@ const title = "Fahrzeuge verwalten";
       const kraftstoff = els.fields.kraftstoff.value.trim();
       const getriebe = els.fields.getriebe.value.trim();
       const status = els.fields.status.value;
+      const highlight = !!els.fields.highlight.checked;
+      const highlightOrder = normalizeNumber(els.fields.highlightOrder.value);
       const standort = els.fields.standort.value.trim();
       const bilder = (els.fields.bilder.value || "").split("\n").map(s => s.trim()).filter(Boolean);
 
@@ -352,6 +380,8 @@ const title = "Fahrzeuge verwalten";
         ...(km !== null ? { km } : {}),
         ...(ez ? { ez } : {}),
         ...(status ? { status } : {}),
+        ...(highlight ? { highlight: true } : {}),
+        ...(highlightOrder !== null ? { highlightOrder } : {}),
         ...(standort ? { standort } : {}),
         ...(bilder.length ? { bilder } : {}),
         ...extra

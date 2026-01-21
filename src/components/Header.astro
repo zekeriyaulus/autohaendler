@@ -8,13 +8,14 @@ const nav = [
   { href: "/fahrzeuge/", label: "Fahrzeuge" },
   { href: "/autoankauf/", label: "Autoankauf" },
   { href: "/kontakt/", label: "Kontakt" },
+  { href: "/impressum/", label: "Impressum" },
 ];
 
 // Optionaler Admin-Link (standardmäßig aus)
 const showAdmin = import.meta.env.SHOW_ADMIN_LINK === "true";
 if (showAdmin) nav.push({ href: "/admin/fahrzeuge/", label: "Admin" });
 
-const isActive = (href) => {
+const isActive = (href: string) => {
   if (href === "/") return pathname === "/";
   return pathname.startsWith(href);
 };
@@ -22,30 +23,112 @@ const isActive = (href) => {
 
 <header class="site-header">
   <div class="container header-inner">
-    <a class="brand" href="/">
-      <span class="brand-name">{site.name}</span>
-      <span class="brand-tagline">{site.tagline}</span>
-    </a>
+    <a class="brand" href="/" aria-label={`${site.name} – Startseite`}>
+      <span class="logo"><img src="/logo/carvision-logo.png" alt="CarVision Paderborn" class="logo-img" /></span>
 
-    <nav class="site-nav" aria-label="Hauptnavigation">
-      {nav.map((n) => (
-        <a class={isActive(n.href) ? "nav-link active" : "nav-link"} href={n.href}>{n.label}</a>
+      <span class="brand-text">
+        <span class="brand-name">CarVision Paderborn</span>
+        <span class="brand-tagline">Gebrauchtwagen · Ankauf · Service</span>
+      </span>
+
+      <span class="sr-only">CarVision Paderborn – Gebrauchtwagen · Ankauf · Service</span>
+</a>
+
+    <button class="nav-toggle" type="button" aria-label="Menü öffnen" aria-expanded="false" data-nav-toggle>
+      <span class="burger" aria-hidden="true"></span>
+    </button>
+
+    <nav class="site-nav" aria-label="Hauptnavigation" data-nav>
+      {nav.map((item) => (
+        <a class={`nav-link ${isActive(item.href) ? "active" : ""}`} href={item.href}>
+          {item.label}
+        </a>
       ))}
     </nav>
   </div>
+
+  {/* Mobile Menü (Overlay/Drawer) */}
+  <div class="mobile-nav" data-mobile-nav aria-hidden="true">
+    <div class="mobile-nav__backdrop" data-nav-close></div>
+    <div class="mobile-nav__panel" role="dialog" aria-modal="true" aria-label="Menü">
+      <div class="mobile-nav__top">
+        <div class="mobile-nav__title">{site.name}</div>
+        <button class="mobile-nav__close" type="button" aria-label="Menü schließen" data-nav-close>✕</button>
+      </div>
+      <div class="mobile-nav__links">
+        {nav.map((item) => (
+          <a class={`mobile-nav__link ${isActive(item.href) ? "active" : ""}`} href={item.href} data-nav-link>
+            {item.label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
 </header>
 
+<script is:inline>
+  (() => {
+    const toggle = document.querySelector('[data-nav-toggle]');
+    const mobile = document.querySelector('[data-mobile-nav]');
+    const panel = mobile?.querySelector('.mobile-nav__panel');
+    const closeEls = mobile?.querySelectorAll('[data-nav-close]');
+    const links = mobile?.querySelectorAll('[data-nav-link]');
+
+    if (!toggle || !mobile || !panel) return;
+
+    const open = () => {
+      mobile.classList.add('is-open');
+      mobile.setAttribute('aria-hidden', 'false');
+      toggle.setAttribute('aria-expanded', 'true');
+      document.documentElement.classList.add('no-scroll');
+      // Fokus in Panel
+      (panel.querySelector('a,button') || panel).focus?.();
+    };
+
+    const close = () => {
+      mobile.classList.remove('is-open');
+      mobile.setAttribute('aria-hidden', 'true');
+      toggle.setAttribute('aria-expanded', 'false');
+      document.documentElement.classList.remove('no-scroll');
+      toggle.focus?.();
+    };
+
+    toggle.addEventListener('click', () => {
+      mobile.classList.contains('is-open') ? close() : open();
+    });
+
+    closeEls?.forEach((el) => el.addEventListener('click', close));
+    links?.forEach((el) => el.addEventListener('click', close));
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && mobile.classList.contains('is-open')) close();
+    });
+  })();
+</script>
+
 <style>
-  .site-header{
-    position:sticky; top:0; z-index:50;
-    backdrop-filter:saturate(160%) blur(12px);
-    background:rgba(0,0,0,.55);
-    border-bottom:1px solid rgba(255,255,255,.10);
+.site-header{
+    background:#0b0f14;
+    color:#fff;
+    position:sticky;
+    top:0;
+    z-index:50;
+    border-bottom:1px solid rgba(255,255,255,.08);
   }
-  .header-inner{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;}
-  .brand{text-decoration:none;display:flex;flex-direction:column;gap:2px;min-width:160px}
-  .brand-name{font-weight:900;letter-spacing:.2px}
-  .brand-tagline{font-size:.86rem;opacity:.85}
+
+  .header-inner{display:flex;align-items:center;justify-content:space-between;gap:28px;min-height:180px;padding:28px 0}
+  .logo-img{display:block;height:140px;width:auto}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+  .header-inner{display:flex;align-items:center;justify-content:space-between;gap:28px;min-height:180px;padding:28px 0}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;min-width:0}
+  .logo{display:grid;place-items:center;flex:0 0 auto}
+  .logo-img{display:block;height:140px;width:auto}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  .brand-text{display:flex;flex-direction:column;min-width:0}
+  .brand-name{font-weight:950;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .brand-tagline{font-size:.86rem;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
   .site-nav{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
   .nav-link{
     text-decoration:none;
@@ -60,4 +143,78 @@ const isActive = (href) => {
     background:rgba(56,189,248,.18);
     border-color:rgba(56,189,248,.35);
   }
+
+  .nav-toggle{display:none;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);
+    border-radius:12px;padding:10px 12px;color:#fff;cursor:pointer}
+  .burger{display:block;width:20px;height:2px;background:#fff;position:relative}
+  .burger::before,.burger::after{content:"";position:absolute;left:0;width:20px;height:2px;background:#fff}
+  .burger::before{top:-6px}
+  .burger::after{top:6px}
+
+  /* Mobile Nav Drawer */
+  .mobile-nav{display:none}
+  .mobile-nav.is-open{display:block}
+  .mobile-nav__backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100}
+  .mobile-nav__panel{
+    position:fixed;right:10px;left:10px;top:78px;
+    background:#0b0f14;color:#fff;border:1px solid rgba(255,255,255,.10);
+    border-radius:18px;z-index:101;
+    box-shadow:0 18px 40px rgba(0,0,0,.45);
+    padding:14px;
+  }
+  .mobile-nav__top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .mobile-nav__title{font-weight:950}
+  .mobile-nav__close{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);
+    border-radius:12px;padding:8px 10px;color:#fff;cursor:pointer}
+  .mobile-nav__links{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+  .mobile-nav__link{
+    text-decoration:none;color:#fff;font-weight:900;
+    padding:12px 12px;border-radius:14px;
+    border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);
+  }
+  .mobile-nav__link.active{border-color:rgba(56,189,248,.35);background:rgba(56,189,248,.14)}
+
+  /* Responsive switch */
+  @media (max-width: 860px){
+    .logo-img{height:96px}
+    .site-nav{display:none}
+    .nav-toggle{display:inline-flex;align-items:center;justify-content:center}
+    .brand-tagline{display:none}
+  }
+  @media (max-width: 420px){
+    .brand-name{font-size:1rem}
+  }
+
+  /* --- Brand refinements (logo + elegant text) --- */
+  .brand{display:flex;align-items:center;gap:14px}
+  .logo{display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .logo-img{height:88px;width:auto;display:block;filter:drop-shadow(0 6px 14px rgba(0,0,0,.35))}
+  .brand-text{display:flex;flex-direction:column;line-height:1.05;min-width:0}
+  .brand-name{
+    font-weight:900;
+    letter-spacing:.4px;
+    font-size:1.18rem;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .brand-tagline{
+    margin-top:4px;
+    font-size:.92rem;
+    opacity:.82;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  /* Make header a bit slimmer but still premium */
+  .header-inner{min-height:104px;padding:14px 0}
+
+  @media (max-width: 860px){
+    .logo-img{height:64px}
+    .header-inner{min-height:84px;padding:10px 0}
+    .brand-name{font-size:1.05rem}
+    .brand-tagline{font-size:.86rem}
+  }
+
 </style>
