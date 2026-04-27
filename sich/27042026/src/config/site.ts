@@ -17,20 +17,24 @@ export const site = {
   // Für Kontaktformular/Benachrichtigungen könnt ihr z.B. eine eigene Mail eintragen.
   email: null as string | null,
 
+  // Öffnungszeiten (optional, für Footer/Schema.org)
   openingHours: [
     { days: "Mo–Fr", hours: "09:00–18:00" },
     { days: "Sa", hours: "10:00–14:00" },
   ],
 
+  // Google Maps Query (Adresse reicht)
   mapsQuery: "Hohe Kamp 12, 33175 Bad Lippspringe",
+
+  // Hero Hintergrundbild (vom User genannt): /public/uploads/hintergrund.jpg
   heroBackground: "/uploads/hintergrund.jpg",
 
-  // mobile.de Händlerprofil: sichtbarer Fahrzeugbestand wird extern verlinkt.
+  // mobile.de Händler-Slug (für Verlinkung/Einbindung)
   mobileDealerSlug: "ANVERKAUFVONKFZBADLIPPSRINGE",
-  mobileUrl: "https://home.mobile.de/ANVERKAUFVONKFZBADLIPPSRINGE",
 };
 
 export function telHref(phone: string) {
+  // entfernt Leerzeichen/Klammern für tel:
   const cleaned = phone.replace(/\s+/g, "").replace(/[()]/g, "");
   return `tel:${cleaned}`;
 }

@@ -1,114 +1,87 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import VehicleCard from "../components/VehicleCard.astro";
-import { getCars } from "../lib/carsStore";
 import { site, telHref } from "../config/site";
 
-// Wichtig: Verwende überall die gleiche Datenquelle (Netlify Blobs / src/data/cars.json)
-// damit Links von Karten -> Detailseite immer funktionieren.
-const autos = await getCars();
-
-// Highlights:
-// - Wenn Fahrzeuge das Feld "highlight: true" haben, werden diese bevorzugt angezeigt.
-// - Danach wird (bis max. 3) mit weiteren nicht-verkauften Fahrzeugen aufgefüllt.
-const sichtbareAutos = autos.filter((a: any) => a?.status !== "verkauft");
-const featured = sichtbareAutos.filter((a: any) => a?.highlight === true);
-// Optional: Highlight-Reihenfolge (kleinere Zahl = weiter oben).
-// Falls nicht gesetzt, landet das Fahrzeug hinter den nummerierten Highlights.
-const featuredSorted = [...featured].sort((a: any, b: any) => {
-  const ao = Number.isFinite(a?.highlightOrder) ? Number(a.highlightOrder) : 999999;
-  const bo = Number.isFinite(b?.highlightOrder) ? Number(b.highlightOrder) : 999999;
-  if (ao !== bo) return ao - bo;
-  return String(a?.titel ?? a?.id ?? "").localeCompare(String(b?.titel ?? b?.id ?? ""), "de");
-});
-const featuredIds = new Set(featured.map((a: any) => String(a.id)));
-const fallback = sichtbareAutos.filter((a: any) => !featuredIds.has(String(a.id)));
-const highlightAutos = [...featuredSorted, ...fallback].slice(0, 3);
-
-// Keep brand in one line (no break between words)
 const brandNameNbsp = site.name.replace(/\s+/g, "\u00A0");
 ---
 
 <BaseLayout
-  title={`${site.name} – Gebrauchtwagen in ${site.address.city}`}
-  description={`${site.name}: Gebrauchtwagen, Autoankauf und Service in ${site.address.city}. Fahrzeuge ansehen, anrufen oder Nachricht senden.`}
+  title={`${site.name} – Gebrauchtwagen, Ankauf & Service in ${site.address.city}`}
+  description={`${site.name}: Gebrauchtwagen, Fahrzeugankauf und Service in ${site.address.city}. Der aktuelle Fahrzeugbestand ist direkt über mobile.de erreichbar.`}
 >
-  <!-- Hero: NUR Bild. Infos (Standort/Kontakt/Live-Bestand) liegen horizontal AUF dem Bild. -->
-  <section class="hero hero--home hero--imageonly full-bleed" cv-hero-bg" style={{ "--hero-bg": `url(${site.heroBackground})` }}>
-    <div class="hero-infobar" aria-label="Standort, Kontakt und Live-Bestand">
-      <div class="hero-infobar__inner card">
-        <a class="hero-infobar__item" href="/kontakt" style="--d: 0ms">
-          <div class="hero-infobar__label">Standort</div>
-          <div class="hero-infobar__value">{site.address.street}, {site.address.zip} {site.address.city}</div>
-        </a>
-        <a class="hero-infobar__item" href="/kontakt" style="--d: 160ms">
-          <div class="hero-infobar__label">Kontakt</div>
-          <div class="hero-infobar__value">{site.phones[0]} · {site.phones[1]}</div>
-        </a>
-        <a class="hero-infobar__item" href="/fahrzeuge/live" style="--d: 320ms">
-          <div class="hero-infobar__label">Live-Bestand</div>
-          <div class="hero-infobar__value">Optional per mobile.de iFrame oder API</div>
-        </a>
-      </div>
-    </div>
-  </section>
+  <section class="premium-hero premium-hero--background full-bleed" aria-label="Startbereich CarVision Paderborn" style="margin-top:-22px;">
+    <img class="premium-hero__bgImage" src="/uploads/carvision-cabrio-hero.png" alt="" loading="eager" decoding="async" />
+    <div class="premium-hero__shade"></div>
 
-  <!-- Inhalte UNTER dem Hero-Bild: volle Breite (innerhalb Container) -->
-  <section class="hero-below" style="margin-top:18px;">
-    <div class="container">
-      <div class="card" style="padding:18px;">
-        <div class="chip">Bad Lippspringe · Paderborn Umgebung</div>
-        <h1 class="h1" style="margin-top:12px;">
-          Gebrauchtwagen, Ankauf &amp; Service – <span style="color:var(--brand);white-space:nowrap;display:inline-block">{brandNameNbsp}</span>
+    <div class="container premium-hero__inner">
+      <div class="premium-hero__content">
+        <div class="chip premium-hero__chip">Bad Lippspringe · Paderborn Umgebung</div>
+        <h1 class="premium-hero__title">
+          Gebrauchtwagen, Ankauf &amp; Service – <span>{brandNameNbsp}</span>
         </h1>
-        <p class="p" style="max-width:62ch;">
-          Transparent, unkompliziert und schnell. Entdecke unseren Fahrzeugbestand oder ruf direkt an – wir beraten dich gern.
+        <p class="premium-hero__text">
+          Persönliche Beratung, faire Abwicklung und klare Kommunikation. Den aktuellen Fahrzeugbestand findet ihr direkt auf mobile.de – dort sind Bilder, Preise und Verfügbarkeit immer am aktuellsten.
         </p>
 
-        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;">
-          <a class="btn primary" href="/fahrzeuge/">Fahrzeuge ansehen</a>
-          <a class="btn" href="/autoankauf/">Autoankauf / Inzahlungnahme</a>
-          <a class="btn" href={telHref(site.phones[0])}>Jetzt anrufen</a>
+        <div class="premium-hero__actions">
+          <a class="btn primary" href={site.mobileUrl} target="_blank" rel="noopener noreferrer">Fahrzeuge auf mobile.de ansehen</a>
+          <a class="btn premium-hero__btnLight" href="/autoankauf/">Autoankauf / Inzahlungnahme</a>
+          <a class="btn premium-hero__btnLight" href={telHref(site.phones[0])}>Jetzt anrufen</a>
         </div>
       </div>
     </div>
+
+    <div class="hero-infobar" aria-label="Standort, Kontakt und Fahrzeugbestand">
+      <div class="hero-infobar__inner card">
+        <a class="hero-infobar__item" href="/kontakt/" style="--d: 0ms">
+          <div class="hero-infobar__label">Standort</div>
+          <div class="hero-infobar__value">{site.address.street}, {site.address.zip} {site.address.city}</div>
+        </a>
+        <a class="hero-infobar__item" href={telHref(site.phones[0])} style="--d: 160ms">
+          <div class="hero-infobar__label">Telefon</div>
+          <div class="hero-infobar__value">{site.phones[0]}</div>
+        </a>
+        <a class="hero-infobar__item" href={site.mobileUrl} target="_blank" rel="noopener noreferrer" style="--d: 320ms">
+          <div class="hero-infobar__label">Fahrzeugbestand</div>
+          <div class="hero-infobar__value">Aktuelle Fahrzeuge auf mobile.de ansehen</div>
+        </a>
+      </div>
+    </div>
   </section>
 
-  <section style="margin-top:22px;">
-    <div class="grid" style="grid-template-columns:repeat(3, minmax(0,1fr));">
-      <div class="card" style="padding:16px;">
-        <div style="font-weight:900;">Geprüfte Fahrzeuge</div>
-        <p class="small" style="margin:8px 0 0;">Klare Angaben, faire Preise, schnelle Abwicklung.</p>
+  <section style="margin-top:26px;">
+    <div class="grid services-grid" style="grid-template-columns:repeat(3, minmax(0,1fr));">
+      <div class="card" style="padding:18px;">
+        <div class="chip">01</div>
+        <h2 class="h2" style="margin-top:12px;">Gebrauchtwagen</h2>
+        <p class="small" style="margin:8px 0 0;line-height:1.7;">Ausgewählte Fahrzeuge mit klaren Informationen. Der aktuelle Bestand wird extern über mobile.de gepflegt.</p>
       </div>
-      <div class="card" style="padding:16px;">
-        <div style="font-weight:900;">Zulassung &amp; Beratung</div>
-        <p class="small" style="margin:8px 0 0;">Wir unterstützen bei Fragen rund um Kauf &amp; Übergabe.</p>
+      <div class="card" style="padding:18px;">
+        <div class="chip">02</div>
+        <h2 class="h2" style="margin-top:12px;">Fahrzeugankauf</h2>
+        <p class="small" style="margin:8px 0 0;line-height:1.7;">Du möchtest dein Fahrzeug verkaufen oder in Zahlung geben? Wir klären die wichtigsten Daten direkt und unkompliziert.</p>
       </div>
-      <div class="card" style="padding:16px;">
-        <div style="font-weight:900;">Autoankauf</div>
-        <p class="small" style="margin:8px 0 0;">Einfach Daten senden – wir melden uns zeitnah.</p>
+      <div class="card" style="padding:18px;">
+        <div class="chip">03</div>
+        <h2 class="h2" style="margin-top:12px;">Service &amp; Beratung</h2>
+        <p class="small" style="margin:8px 0 0;line-height:1.7;">Von Besichtigung bis Übergabe: Wir unterstützen bei Fragen rund um Kauf, Verkauf und Abwicklung.</p>
       </div>
     </div>
   </section>
 
   <hr class="sep" />
 
-  <section>
-    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;">
-      <div>
-        <h2 class="h2">Aktuelle Highlights</h2>
-        
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <a class="btn" href="/fahrzeuge/live/">Live Bestand (mobile.de)</a>
-        <a class="btn primary" href="/fahrzeuge/">Alle Fahrzeuge</a>
-      </div>
+  <section class="card" style="padding:20px;display:grid;gap:18px;grid-template-columns:1.25fr .75fr;align-items:center;">
+    <div>
+      <span class="chip">Aktueller Bestand</span>
+      <h2 class="h2" style="margin-top:12px;">Fahrzeuge direkt auf mobile.de ansehen</h2>
+      <p class="p" style="margin:8px 0 0;">
+        Damit Fahrzeugdaten nicht doppelt gepflegt werden müssen, ist der Fahrzeugbestand auf dieser Webseite nicht eingebunden. Der Button führt direkt zum aktuellen Händlerprofil auf mobile.de.
+      </p>
     </div>
-
-    <div class="grid" style="margin-top:14px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));">
-      {highlightAutos.map((auto: any) => (
-        <VehicleCard auto={auto} />
-      ))}
+    <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start;justify-content:center;">
+      <a class="btn primary" href={site.mobileUrl} target="_blank" rel="noopener noreferrer">Zum mobile.de Bestand</a>
+      <a class="btn" href="/kontakt/">Kontakt &amp; Anfahrt</a>
     </div>
   </section>
 
@@ -118,18 +91,19 @@ const brandNameNbsp = site.name.replace(/\s+/g, "\u00A0");
     <div>
       <h2 class="h2">Schnell Kontakt aufnehmen</h2>
       <p class="p" style="margin:8px 0 0;">
-        Du hast ein Fahrzeug im Blick oder möchtest dein Auto verkaufen? Ruf uns an oder nutze das Kontaktformular.
+        Du hast ein Fahrzeug auf mobile.de gesehen oder möchtest dein Auto verkaufen? Ruf uns an oder nutze das Kontaktformular.
       </p>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start;justify-content:center;">
       <a class="btn primary" href="/kontakt/">Kontaktformular</a>
-      <a class="btn" href={telHref(site.phones[0])}>{site.phones[0]}</a>
-      <a class="btn" href={telHref(site.phones[1])}>{site.phones[1]}</a>
+      {site.phones.map((phone) => <a class="btn" href={telHref(phone)}>{phone}</a>)}
     </div>
   </section>
 </BaseLayout>
 
 <style>
-.nowrap{white-space:nowrap;}
-  .cv-hero-bg{background:radial-gradient(1200px 500px at 20% 0%, rgba(196,0,0,.22), rgba(11,15,20,0) 55%), radial-gradient(900px 500px at 80% 0%, rgba(255,43,43,.14), rgba(11,15,20,0) 60%);} 
+  @media(max-width:900px){
+    .services-grid{grid-template-columns:1fr!important}
+    section.card[style*="grid-template-columns"]{grid-template-columns:1fr!important}
+  }
 </style>

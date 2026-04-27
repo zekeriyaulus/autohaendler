@@ -1,0 +1,103 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { site, telHref } from "../config/site";
+
+const mapsSrc = `https://www.google.com/maps?q=${encodeURIComponent(site.mapsQuery)}&output=embed`;
+---
+
+<BaseLayout
+  title={`Kontakt & Anfahrt – ${site.name}`}
+  description={`Kontakt zu ${site.name} in ${site.address.city}: Adresse, Telefon und Kontaktformular.`}
+>
+  <section class="card" style="padding:18px;">
+    <h1 class="h1">Kontakt &amp; Anfahrt</h1>
+    <p class="p" style="max-width:70ch;">
+      Schreib uns eine kurze Nachricht (Kontaktformular) oder ruf direkt an – wir melden uns so schnell wie möglich.
+    </p>
+
+    <div class="grid" style="margin-top:16px;grid-template-columns:1fr 1fr;">
+      <div class="card" style="padding:16px;">
+        <h2 class="h2">Direktkontakt</h2>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:10px;">
+          <div class="small"><b>Adresse:</b> {site.address.street}, {site.address.zip} {site.address.city}, {site.address.country}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;">
+            {site.phones.map((p) => (
+              <a class="btn" href={telHref(p)}>{p}</a>
+            ))}
+          </div>
+          {site.openingHours?.length ? (
+            <div class="small">
+              <b>Öffnungszeiten:</b> {site.openingHours.map((o) => `${o.days} ${o.hours}`).join(" · ")}
+            </div>
+          ) : null}
+          {site.email ? (
+            <div class="small"><b>E-Mail:</b> <a href={`mailto:${site.email}`}>{site.email}</a></div>
+          ) : (
+            <div class="small">E-Mail ist nicht öffentlich gelistet – bitte Kontaktformular oder Telefon nutzen.</div>
+          )}
+        </div>
+      </div>
+
+      <div class="card" style="padding:16px;">
+        <h2 class="h2">Kurze Nachricht</h2>
+        <p class="small" style="margin-top:8px;">Das Formular funktioniert z.B. auf Netlify ohne extra Backend (Netlify Forms).</p>
+
+        <form
+          name="kontakt"
+          method="POST"
+          action="/danke/"
+          data-netlify="true"
+          netlify-honeypot="bot-field"
+          style="margin-top:12px;display:grid;gap:12px;"
+        >
+          <input type="hidden" name="form-name" value="kontakt" />
+          <p class="visually-hidden">
+            <label>
+              Nicht ausfüllen: <input name="bot-field" />
+            </label>
+          </p>
+
+          <div>
+            <label for="name">Name</label>
+            <input id="name" name="name" autocomplete="name" required />
+          </div>
+
+          <div class="grid" style="grid-template-columns:1fr 1fr;">
+            <div>
+              <label for="email">E-Mail</label>
+              <input id="email" name="email" type="email" autocomplete="email" required />
+            </div>
+            <div>
+              <label for="phone">Telefon (optional)</label>
+              <input id="phone" name="phone" autocomplete="tel" />
+            </div>
+          </div>
+
+          <div>
+            <label for="message">Nachricht</label>
+            <textarea id="message" name="message" rows="5" required></textarea>
+          </div>
+
+          <label style="display:flex;gap:10px;align-items:flex-start;">
+            <input name="consent" type="checkbox" required style="width:auto;margin-top:3px;" />
+            <span class="small">Ich stimme der Verarbeitung meiner Angaben zur Kontaktaufnahme zu.</span>
+          </label>
+
+          <button class="btn primary" type="submit" style="cursor:pointer;">
+            Nachricht senden
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="padding:0; margin-top:18px; overflow:hidden;">
+    <iframe
+      title="Karte"
+      src={mapsSrc}
+      loading="lazy" decoding="async"
+      referrerpolicy="no-referrer-when-downgrade"
+      style="width:100%;height:380px;border:0;"
+    ></iframe>
+  </section>
+</BaseLayout>

@@ -1,0 +1,16 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { site } from "../../config/site";
+---
+<BaseLayout title={`Unternehmen | ${site.name}`} description="Kurzinfos zum Standort und zur Arbeitsweise.">
+  <div class="grid" style="gap:18px;">
+    <div class="card" style="padding:18px;">
+      <span class="chip">Über uns</span>
+      <h1 class="h1" style="margin-top:10px;">{site.name}</h1>
+      <p class="p" style="margin-top:10px;">
+        Wir sind ein Händler in {site.address.city} und bieten Gebrauchtwagen sowie Ankauf/Inzahlungnahme an.
+        Für Details und konkrete Fahrzeuganfragen erreichst du uns am schnellsten telefonisch.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

@@ -250,3 +250,312 @@ html.no-scroll, html.no-scroll body{overflow:hidden}
   .filters-grid{grid-template-columns:1fr !important}
   .filters-grid > *{grid-column: span 12 !important}
 }
+
+/* --- Premium Start-Hero mit Fahrzeug --- */
+.premium-hero{
+  position:relative;
+  overflow:hidden;
+  min-height:620px;
+  background:#070b10;
+  color:#fff;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.premium-hero__bg{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(680px 380px at 72% 34%, rgba(196,0,0,.24), transparent 64%),
+    radial-gradient(700px 420px at 22% 30%, rgba(255,255,255,.08), transparent 62%),
+    linear-gradient(120deg, #070b10 0%, #101723 52%, #05070a 100%);
+}
+.premium-hero__bg::after{
+  content:"";
+  position:absolute;
+  inset:auto 0 0 0;
+  height:46%;
+  background:linear-gradient(180deg, transparent, rgba(0,0,0,.38));
+}
+.premium-hero__inner{
+  position:relative;
+  z-index:1;
+  min-height:500px;
+  padding:70px 18px 128px;
+  display:grid;
+  grid-template-columns:minmax(0, .95fr) minmax(420px, 1.05fr);
+  gap:28px;
+  align-items:center;
+}
+.premium-hero__content{max-width:650px}
+.premium-hero__chip{
+  color:rgba(255,255,255,.82);
+  border-color:rgba(255,255,255,.2);
+  background:rgba(255,255,255,.06);
+}
+.premium-hero__title{
+  margin:16px 0 0;
+  font-size:clamp(36px, 5vw, 68px);
+  line-height:.98;
+  letter-spacing:-.045em;
+  font-weight:950;
+}
+.premium-hero__title span{color:#ff2020;display:inline-block;white-space:nowrap}
+.premium-hero__text{
+  margin:18px 0 0;
+  max-width:60ch;
+  color:rgba(255,255,255,.78);
+  line-height:1.7;
+  font-size:16px;
+}
+.premium-hero__actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.premium-hero__btnLight{
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  border-color:rgba(255,255,255,.18);
+}
+.premium-hero__btnLight:hover{border-color:rgba(255,255,255,.45)}
+.premium-hero__visual{
+  position:relative;
+  min-height:330px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.premium-hero__glow{
+  position:absolute;
+  width:min(620px, 100%);
+  height:220px;
+  border-radius:999px;
+  background:radial-gradient(circle, rgba(196,0,0,.32), rgba(196,0,0,.10) 42%, transparent 72%);
+  filter:blur(10px);
+  transform:translateY(58px);
+}
+.premium-hero__car{
+  position:relative;
+  z-index:1;
+  width:min(720px, 108%);
+  max-width:none;
+  transform:translateX(18px);
+  filter:drop-shadow(0 26px 44px rgba(0,0,0,.42));
+}
+
+@media (max-width: 980px){
+  .premium-hero{min-height:auto}
+  .premium-hero__inner{
+    grid-template-columns:1fr;
+    padding-top:46px;
+    padding-bottom:136px;
+  }
+  .premium-hero__visual{order:-1;min-height:230px}
+  .premium-hero__car{width:min(620px, 100%);transform:none}
+  .premium-hero__title{font-size:clamp(34px, 8vw, 54px)}
+}
+@media (max-width: 560px){
+  .premium-hero__inner{padding-top:34px;padding-bottom:166px}
+  .premium-hero__visual{min-height:190px}
+  .premium-hero__actions .btn{width:100%}
+  .premium-hero__title span{white-space:normal}
+}
+
+/* --- Premium Hero v6: echtes Fahrzeugfoto + besser lesbare Infobar --- */
+.premium-hero__visual{isolation:isolate;}
+.premium-hero__photoFrame{
+  position:relative;
+  z-index:1;
+  width:min(720px, 108%);
+  border-radius:28px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
+  box-shadow:0 28px 70px rgba(0,0,0,.46);
+  transform:translateX(18px) rotate(-1deg);
+}
+.premium-hero__photoFrame::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(90deg, rgba(7,11,16,.05), transparent 44%, rgba(196,0,0,.12));
+}
+.premium-hero__car{
+  display:block !important;
+  width:100% !important;
+  height:360px !important;
+  object-fit:cover;
+  object-position:center;
+  transform:none !important;
+  filter:none !important;
+  max-width:none;
+}
+.premium-hero__photoCredit{
+  position:absolute;
+  right:10px;
+  bottom:-18px;
+  z-index:2;
+  font-size:10px;
+  color:rgba(255,255,255,.42);
+}
+.hero-infobar__inner{
+  background:rgba(7,11,16,.88) !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+  box-shadow:0 18px 45px rgba(0,0,0,.32);
+}
+.hero-infobar__item{
+  background:rgba(255,255,255,.06) !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+}
+.hero-infobar__item:hover{
+  background:rgba(255,255,255,.09) !important;
+  border-color:rgba(255,32,32,.45) !important;
+}
+.hero-infobar__label{color:#fff;font-weight:950;}
+.hero-infobar__value{color:rgba(255,255,255,.76) !important;}
+@media (max-width: 980px){
+  .premium-hero__photoFrame{width:min(620px, 100%);transform:none}
+  .premium-hero__car{height:300px !important;}
+  .premium-hero__photoCredit{position:static;margin-top:6px;text-align:right}
+}
+@media (max-width: 560px){.premium-hero__car{height:220px !important;}}
+
+/* --- Premium Hero v7: echtes Auto als kompletter Hintergrund --- */
+.premium-hero--background{
+  min-height:720px;
+  background:#05070a;
+  color:#fff;
+  isolation:isolate;
+}
+.premium-hero--background .premium-hero__bgImage{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  z-index:0;
+  filter:saturate(1.08) contrast(1.04);
+}
+.premium-hero--background .premium-hero__shade{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg, rgba(5,7,10,.92) 0%, rgba(5,7,10,.72) 38%, rgba(5,7,10,.30) 72%, rgba(5,7,10,.68) 100%),
+    linear-gradient(180deg, rgba(5,7,10,.28) 0%, rgba(5,7,10,.18) 48%, rgba(5,7,10,.90) 100%);
+}
+.premium-hero--background .premium-hero__inner{
+  position:relative;
+  z-index:2;
+  min-height:560px;
+  display:flex;
+  align-items:center;
+  padding:84px 18px 150px;
+}
+.premium-hero--background .premium-hero__content{
+  max-width:720px;
+  padding:28px 0;
+}
+.premium-hero--background .premium-hero__title{
+  text-shadow:0 12px 36px rgba(0,0,0,.55);
+}
+.premium-hero--background .premium-hero__text{
+  max-width:64ch;
+  color:rgba(255,255,255,.86);
+  text-shadow:0 8px 24px rgba(0,0,0,.55);
+}
+.premium-hero--background .premium-hero__chip{
+  background:rgba(7,11,16,.58);
+  border-color:rgba(255,255,255,.24);
+  color:rgba(255,255,255,.88);
+  backdrop-filter:blur(10px);
+}
+.premium-hero--background .premium-hero__btnLight{
+  background:rgba(7,11,16,.72);
+  color:#fff;
+  border-color:rgba(255,255,255,.22);
+  backdrop-filter:blur(10px);
+}
+.premium-hero--background .hero-infobar{
+  z-index:3;
+}
+.premium-hero--background .hero-infobar__inner{
+  background:rgba(7,11,16,.78) !important;
+  border:1px solid rgba(255,255,255,.20) !important;
+  box-shadow:0 24px 60px rgba(0,0,0,.42);
+  backdrop-filter:blur(14px) saturate(1.08);
+}
+.premium-hero--background .hero-infobar__item{
+  background:rgba(255,255,255,.08) !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+}
+.premium-hero--background .hero-infobar__label{
+  color:#fff !important;
+}
+.premium-hero--background .hero-infobar__value{
+  color:rgba(255,255,255,.82) !important;
+}
+@media (max-width: 980px){
+  .premium-hero--background{min-height:680px;}
+  .premium-hero--background .premium-hero__bgImage{object-position:58% center;}
+  .premium-hero--background .premium-hero__shade{
+    background:
+      linear-gradient(90deg, rgba(5,7,10,.94) 0%, rgba(5,7,10,.78) 58%, rgba(5,7,10,.55) 100%),
+      linear-gradient(180deg, rgba(5,7,10,.25), rgba(5,7,10,.92));
+  }
+  .premium-hero--background .premium-hero__inner{padding-top:58px;padding-bottom:180px;}
+}
+@media (max-width: 560px){
+  .premium-hero--background{min-height:760px;}
+  .premium-hero--background .premium-hero__bgImage{object-position:62% center;}
+  .premium-hero--background .premium-hero__inner{padding-top:42px;padding-bottom:230px;}
+}
+
+/* --- v8: Hero-Hintergrund heller, Auto sichtbarer, kein weißer Abstand --- */
+.premium-hero--background{
+  min-height:720px;
+  background:#070b10;
+}
+.premium-hero--background .premium-hero__bgImage{
+  filter:saturate(1.06) contrast(1.02) brightness(1.08);
+  object-position:center center;
+}
+.premium-hero--background .premium-hero__shade{
+  background:
+    linear-gradient(90deg, rgba(5,7,10,.72) 0%, rgba(5,7,10,.48) 34%, rgba(5,7,10,.14) 66%, rgba(5,7,10,.28) 100%),
+    linear-gradient(180deg, rgba(5,7,10,.10) 0%, rgba(5,7,10,.18) 56%, rgba(5,7,10,.58) 100%);
+}
+.premium-hero--background .premium-hero__content{
+  max-width:700px;
+  padding:24px 26px 26px;
+  border-radius:24px;
+  background:linear-gradient(90deg, rgba(5,7,10,.48), rgba(5,7,10,.18));
+  border:1px solid rgba(255,255,255,.10);
+  backdrop-filter:blur(3px) saturate(1.06);
+  box-shadow:0 24px 70px rgba(0,0,0,.22);
+}
+.premium-hero--background .premium-hero__title,
+.premium-hero--background .premium-hero__text{
+  text-shadow:0 7px 22px rgba(0,0,0,.68);
+}
+.premium-hero--background .premium-hero__text{
+  color:rgba(255,255,255,.90);
+}
+.premium-hero--background .hero-infobar__inner{
+  background:rgba(5,7,10,.64) !important;
+  border:1px solid rgba(255,255,255,.24) !important;
+  backdrop-filter:blur(10px) saturate(1.08);
+}
+.premium-hero--background .hero-infobar__item{
+  background:rgba(255,255,255,.10) !important;
+}
+@media (max-width: 980px){
+  .premium-hero--background .premium-hero__bgImage{object-position:58% center;}
+  .premium-hero--background .premium-hero__shade{
+    background:
+      linear-gradient(90deg, rgba(5,7,10,.82) 0%, rgba(5,7,10,.58) 60%, rgba(5,7,10,.38) 100%),
+      linear-gradient(180deg, rgba(5,7,10,.12), rgba(5,7,10,.72));
+  }
+}
+@media (max-width: 560px){
+  .premium-hero--background .premium-hero__content{padding:18px;border-radius:20px;}
+}

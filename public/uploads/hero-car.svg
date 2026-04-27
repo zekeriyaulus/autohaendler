@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 420" role="img" aria-label="Modernes Fahrzeug">
+  <defs>
+    <linearGradient id="body" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f4f7fb"/>
+      <stop offset="0.46" stop-color="#b8c1cf"/>
+      <stop offset="1" stop-color="#4b5566"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#1c2635"/>
+      <stop offset="1" stop-color="#05080d"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" x2="1">
+      <stop offset="0" stop-color="#ff3131"/>
+      <stop offset="1" stop-color="#b90000"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="24" stdDeviation="24" flood-color="#000" flood-opacity=".35"/>
+    </filter>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+  <ellipse cx="460" cy="345" rx="360" ry="38" fill="#000" opacity=".22" filter="url(#soft)"/>
+  <g filter="url(#shadow)">
+    <path d="M104 281c10-43 34-73 80-86l113-31c39-51 93-78 162-81l91-3c73-2 123 24 177 84l56 10c44 8 77 39 89 81l8 28c3 11-5 22-17 22H121c-11 0-19-12-17-24z" fill="url(#body)"/>
+    <path d="M322 162c34-43 78-63 134-66l96-4c54-2 95 17 137 68H322z" fill="url(#glass)"/>
+    <path d="M351 156c30-33 61-48 106-51l2 51H351z" fill="#121a25" opacity=".95"/>
+    <path d="M482 104l70-3c47-2 78 12 113 55H486l-4-52z" fill="#0b1018" opacity=".98"/>
+    <path d="M155 262c28-19 62-31 101-36h417c65 0 112 15 152 45l-18 14H173l-18-23z" fill="#eef2f7" opacity=".35"/>
+    <path d="M118 284h126c18-45 58-73 104-73s86 28 104 73h214c18-45 58-73 104-73s86 28 104 73h6c-1 12-8 21-19 21H121c-9 0-16-9-17-21h14z" fill="#151b23" opacity=".82"/>
+    <path d="M119 282c8-25 28-42 58-51l39-11c-12 17-21 37-27 62h-70z" fill="url(#red)"/>
+    <path d="M795 224c37 9 62 28 76 58h-67c-4-22-11-42-21-59l12 1z" fill="url(#red)"/>
+    <path d="M395 179h235" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".45"/>
+    <path d="M215 209h86" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".55"/>
+    <path d="M698 207h84" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".48"/>
+    <circle cx="348" cy="291" r="76" fill="#07090d"/>
+    <circle cx="348" cy="291" r="47" fill="#232a34"/>
+    <circle cx="348" cy="291" r="18" fill="#8d98aa"/>
+    <circle cx="770" cy="291" r="76" fill="#07090d"/>
+    <circle cx="770" cy="291" r="47" fill="#232a34"/>
+    <circle cx="770" cy="291" r="18" fill="#8d98aa"/>
+  </g>
+</svg>

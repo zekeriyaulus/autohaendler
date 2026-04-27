@@ -1,0 +1,40 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { site, telHref } from "../../config/site";
+---
+<BaseLayout title={`Autoankauf | ${site.name}`} description="Wir kaufen Ihr Fahrzeug an – schnell, fair und unkompliziert.">
+  <div class="grid" style="gap:18px;">
+    <div class="card" style="padding:18px;">
+      <span class="chip">Autoankauf & Inzahlungnahme</span>
+      <h1 class="h1" style="margin-top:10px;">Wir kaufen dein Fahrzeug an – transparent & unkompliziert.</h1>
+      <p class="p" style="margin-top:10px;">
+        Du möchtest dein Auto verkaufen oder in Zahlung geben? Ruf uns an – wir klären die wichtigsten Daten direkt am Telefon.
+      </p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;">
+        <a class="btn primary" href={telHref(site.phones[0])}>Jetzt anrufen</a>
+        <a class="btn" href="/kontakt/">Kontakt & Anfahrt</a>
+      </div>
+    </div>
+
+    <div class="grid" style="grid-template-columns:1fr 1fr;">
+      <div class="card" style="padding:16px;">
+        <h2 class="h2">Was wir brauchen</h2>
+        <ul class="p" style="margin:10px 0 0; padding-left:18px;">
+          <li>Fahrzeugdaten (Marke/Modell, EZ, km)</li>
+          <li>Zustand & bekannte Mängel</li>
+          <li>Fotos (optional)</li>
+        </ul>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h2 class="h2">So läuft’s ab</h2>
+        <ol class="p" style="margin:10px 0 0; padding-left:18px;">
+          <li>Kurze Bewertung am Telefon</li>
+          <li>Besichtigung nach Termin</li>
+          <li>Faire Einigung & Abwicklung</li>
+        </ol>
+      </div>
+    </div>
+
+    <p class="small">Hinweis: Diese Seite ist eigenständig gestaltet und nutzt lediglich die öffentlichen Kontaktdaten des Händlerprofils.</p>
+  </div>
+</BaseLayout>

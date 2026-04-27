@@ -1,0 +1,40 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { site } from "../../../config/site";
+
+const profileUrl = `https://home.mobile.de/${site.mobileDealerSlug}`;
+---
+
+<BaseLayout
+  title={`Live Fahrzeugbestand – ${site.name}`}
+  description={`Live Fahrzeugbestand von ${site.name} über mobile.de.`}
+>
+  <section class="card" style="padding:18px;">
+    <h1 class="h1">Live Fahrzeugbestand (mobile.de)</h1>
+    <p class="p" style="max-width:75ch;">
+      Wenn ihr den <b>exakten</b> Bestand inklusive Bilder &amp; Daten direkt von mobile.de anzeigen wollt, gibt es zwei saubere Wege:
+      <br />
+      <b>1) iFrame (schnell)</b> oder <b>2) Seller-API (beste Lösung, braucht Zugangsdaten)</b>.
+      Unten ist die iFrame-Variante.
+    </p>
+
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;">
+      <a class="btn" href={profileUrl} target="_blank" rel="noreferrer">Mobile.de Profil öffnen</a>
+      <a class="btn primary" href="/fahrzeuge/">Zurück zur Übersicht</a>
+    </div>
+  </section>
+
+  <section class="card" style="padding:0;margin-top:18px;overflow:hidden;">
+    <!--
+      Hinweis:
+      Manche Seiten blocken iFrames über X-Frame-Options.
+      Wenn der Inhalt hier leer bleibt, nutzt die API-Variante (Seller-API) oder verlinkt nach mobile.de.
+    -->
+    <iframe
+      title="Live Fahrzeugbestand"
+      src={profileUrl}
+      loading="lazy" decoding="async"
+      style="width:100%;height:820px;border:0;"
+    ></iframe>
+  </section>
+</BaseLayout>
